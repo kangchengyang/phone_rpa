@@ -1,0 +1,11 @@
+name = kcy
+email = kangcy@github.com
+git 命令：
+git init 初始化
+git add .    将当前文件下所有的文件都添加到仓库
+git commit -m "注释"  提交
+git log 提交日志
+git reset --hard + 版本号 退回到某版本
+$ git remote add origin git@github.com:kangchengyang/phone_rpa.git 添加代码到github仓库
+$ git push -u origin master 提交
+----------------------------------------------------------------------
