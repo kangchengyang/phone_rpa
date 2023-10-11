@@ -7,5 +7,5 @@ git commit -m "注释"  提交
 git log 提交日志
 git reset --hard + 版本号 退回到某版本
 $ git remote add origin git@github.com:kangchengyang/phone_rpa.git 添加代码到github仓库
-$ git push -u origin master 提交
+$ git push -u origin master 提交：master(本地分支) origin(代码仓库的命名)
 ----------------------------------------------------------------------
