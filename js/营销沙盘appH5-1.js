@@ -76,7 +76,7 @@ function loginApp(phone,passw){
 //手势验证码
 function gesture_verification(){
     for(var i=0;i<3;i++){
-        automator.gesture(6000, [237,929],[237,1253],[237,1577],[561,1253],[885,929]);
+        automator.gesture(4000, [237,929],[237,1253],[237,1500],[561,1500],[885,1500]);
         if(selector().textContains('工作台').findOne(10000)){
             console.log('验证成功')
             return true
@@ -112,12 +112,32 @@ function branch_office(){
     for(var i=0;i<3;i++){
         try{
             selector().text('分公司视图').findOne(1000).click();
+            sleep(3000)
+            for(var i=0;i<10;i++){
+                var is_wait = selector().text('加载中...').waitFor(3000)
+                if(!is_wait){
+                    console.log('加载完毕')
+                    break
+                }else{
+                    sleep(3000)
+                }
+            }            
             sleep(1000)
             selector().text('渝北').findOne(1000).click();
-            sleep(5000)
+            sleep(5000)            
             automator.back()
             sleep(3000)
             automator.clickCenter(selector().textContains('入住住户数(收集):').find()[0])
+            sleep(4000)
+            for(var i=0;i<10;i++){
+                var is_wait = selector().text('加载中...').waitFor(3000)
+                if(!is_wait){
+                    console.log('加载完毕')
+                    break
+                }else{
+                    sleep(3000)
+                }
+            }
             break;
         }catch(e){
             console.log('页面还未加载出来,需要延迟2s')
@@ -160,6 +180,16 @@ function branch_post_office(){
     var jx_str = '      ====开始支局视图巡检====\n'
     var is_not_continue = true
     selector().text('支局视图').findOne(5000).click();
+    sleep(2000)
+    for(var i=0;i<10;i++){
+        var is_wait = selector().text('加载中...').waitFor(3000)
+        if(!is_wait){
+            console.log('加载完毕')
+            break
+        }else{
+            sleep(3000)
+        }
+    }
     console.log('开始循环判断是否加载出来了页面')
     for(var i=0;i<3;i++){
         if(selector().textContains('入住住户数(收集):').find()[0]){
@@ -175,11 +205,20 @@ function branch_post_office(){
         console.log('加载出来了页面')
         sleep(2000)
         selector().textContains('入住住户数(收集):').find()[0].click();
-        sleep(5000)
+        sleep(2000)       
         automator.back()
-        sleep(1000)
-        automator.clickCenter(selector().textContains('入住住户数(收集):').find()[0])
         sleep(2000)
+        automator.clickCenter(selector().textContains('入住住户数(收集):').find()[0])
+        sleep(5000)
+        for(var i=0;i<10;i++){
+            var is_wait = selector().text('加载中...').waitFor(3000)
+            if(!is_wait){
+                console.log('加载完毕')
+                break
+            }else{
+                sleep(3000)
+            }
+        } 
         for(var i=0;i<10;i++){
             text_str = selector().text('总房间数(计算)').depth(7).findOne(2000).next().text();
             console.log(text_str)
@@ -213,7 +252,18 @@ function area_view(){
     var is_not_continue = true
     console.log('====开始片区视图巡检====')
     try{
+        selector().text('首页').findOne(3000).click()
+        sleep(2000)
         selector().text('片区视图').findOne(5000).click();
+        for(var i=0;i<10;i++){
+            var is_wait = selector().text('加载中...').waitFor(3000)
+            if(!is_wait){
+                console.log('加载完毕')
+                break
+            }else{
+                sleep(3000)
+            }
+        }         
         sleep(2000)
         selector().text('片区视图').findOne(2000).next().click();
         sleep(2000)
@@ -221,7 +271,16 @@ function area_view(){
         sleep(2000)
         selector().text('确定').findOne(2000).click();
         sleep(4000)
-        console.log('开始循环判断是否加载出来了页面')
+        for(var i=0;i<10;i++){
+            var is_wait = selector().text('加载中...').waitFor(3000)
+            if(!is_wait){
+                console.log('加载完毕')
+                break
+            }else{
+                sleep(3000)
+            }
+        }        
+        console.log('选择全部完成，开始循环判断是否加载出来了页面')
         for(var i=0;i<3;i++){
             if(selector().textContains('入住住户数(收集):').find()[0]){
                 console.log('页面加载出来了')
@@ -237,8 +296,19 @@ function area_view(){
         if(is_not_continue){
             sleep(1000)
             selector().textContains('入住住户数(收集):').find()[0].click();
+            console.log('点击完成')
+            sleep(4000)
+            for(var j=0;j<10;j++){
+                var is_wait = selector().text('加载中...').waitFor(3000)
+                if(!is_wait){
+                    console.log('加载完毕')
+                    break
+                }else{
+                    sleep(3000)
+                }
+            }
             sleep(2000)
-            for(var i=0;i<10;i++){
+            for(var j=0;j<10;j++){
                 text_str = selector().text('总房间数(计算)').depth(7).findOne(2000).next().text();
                 console.log(text_str)
                 if(text_str=='--'){
@@ -262,10 +332,13 @@ function area_view(){
             return xj_str+='片区视图巡检完成。'
         }
     }catch(e){
+        console.log(e)
         back_index()
         return xj_str+='片区视图页面元素查找异常，可能是页面发生了变动或者升级。'
     }
 }
+
+
 //网格视图
 function grid_view(){
     var xj_str = '      =====开始网格视图巡检====\n'
@@ -273,6 +346,16 @@ function grid_view(){
     console.log('====开始网格视图巡检====')
     try{
         selector().text('网格视图').findOne(5000).click();
+        sleep(2000)
+        for(var i=0;i<10;i++){
+            var is_wait = selector().text('加载中...').waitFor(3000)
+            if(!is_wait){
+                console.log('加载完毕')
+                break
+            }else{
+                sleep(3000)
+            }
+        }        
         console.log('开始循环判断是否加载出来了页面')
         for(var i=0;i<3;i++){
             if(selector().textContains('入住住户数(收集):').find()[0]){
@@ -293,20 +376,46 @@ function grid_view(){
                 if(grid[j].prev().text().indexOf('未归类')==-1){
                     console.log(grid[j].prev().text())
                     grid[j].click();
+                    console.log('点击成功')
                     break;                
                 }
             }
+            sleep(4000)
             for(var i=0;i<10;i++){
-                text_str = selector().text('总房间数(计算)').depth(7).findOne(2000).next().text();
-                console.log(text_str)
-                if(text_str=='--'){
-                    is_not_continue = false;
-                    automator.swipeUp();//下拉一下
-                    sleep(2000);
+                var is_wait = selector().text('加载中...').waitFor(3000)
+                if(!is_wait){
+                    console.log('加载完毕')
+                    break
                 }else{
-                    is_not_continue = true;
-                    break;
+                    sleep(3000)
                 }
+            }
+            sleep(5000)
+            for(var i=0;i<10;i++){
+                var is_wait = selector().text('加载中...').waitFor(3000)
+                if(!is_wait){
+                    console.log('加载完毕')
+                    break
+                }else{
+                    sleep(3000)
+                }
+            }                     
+            for(var i=0;i<3;i++){
+                try{
+                    text_str = selector().text('总房间数(计算)').depth(7).findOne(2000).next().text();
+                    console.log(text_str)
+                    if(text_str=='--'){
+                        is_not_continue = false;
+                        automator.swipeUp();//下拉一下
+                        sleep(2000);
+                    }else{
+                        is_not_continue = true;
+                        break;
+                    }
+                }catch(e){
+                    continue
+                }
+
             } 
 
         }else{
@@ -326,6 +435,7 @@ function grid_view(){
             return xj_str+='网格视图页面数据加载异常。'
         }
     }catch(e){
+        console.log(e)
         back_index()
         return xj_str+='网格视图页面元素查找异常，可能是页面发生了变动或者升级。'
     }
@@ -337,7 +447,18 @@ function xq_marketing(){
     var is_not_continue = true
     console.log('=====开始小区营销视图巡检====')
     try{
+        sleep(2000)
         selector().text('小区营销').findOne(5000).click();
+        sleep(2000)
+        for(var i=0;i<10;i++){
+            var is_wait = selector().text('加载中...').waitFor(3000)
+            if(!is_wait){
+                console.log('加载完毕')
+                break
+            }else{
+                sleep(3000)
+            }
+        }        
         console.log('开始循环判断是否加载出来了页面')
         sleep(2000)   
         for(var i=0;i<3;i++){
@@ -373,6 +494,15 @@ function xq_marketing(){
             sleep(2000)  
             automator.gesture(2000, [561,1253],[561,900]);
             sleep(3000)
+            for(var i=0;i<10;i++){
+                var is_wait = selector().text('加载中...').waitFor(3000)
+                if(!is_wait){
+                    console.log('加载完毕')
+                    break
+                }else{
+                    sleep(3000)
+                }
+            }            
             console.log('开始循环判断是否进入成功')
             for(var i=0;i<5;i++){
                 if(selector().text('收集').find()){
@@ -569,6 +699,15 @@ function task_view(){
         selector().text('确 认').findOne(2000).click();
         sleep(2000)
         console.log('开始循环判断是否加载出来了数据')
+        for(var i=0;i<10;i++){
+            var is_wait = selector().text('加载中...').waitFor(3000)
+            if(!is_wait){
+                console.log('加载完毕')
+                break
+            }else{
+                sleep(3000)
+            }
+        }       
         for(var i=0;i<8;i++){
             if(selector().textContains('待执行：').findOne(2000)){
                 is_not_continue = true
@@ -662,7 +801,7 @@ function task_other(){
                 selector().text('确 认').findOne(2000).click();
                 sleep(2000)
                 console.log('开始循环判断是否加载出来了数据')
-                for(var j=0;j<3;j++){
+                for(var j=1;j<3;j++){
                     if(selector().textContains('待执行：').findOne(2000) || selector().textContains('待处理：').findOne(2000)){
                         is_not_continue = true
                         break
@@ -704,7 +843,7 @@ function mobile_kanban(){
             selector().text('首页').findOne(2000).click();
             sleep(2000)
             //数字看板
-            selector().className('android.widget.ListView').findOne(2000).children()[0].children()[0].children()[0].click()
+            automator.clickCenter(selector().className('android.widget.ListView').findOne(2000).children()[1].children()[0])
             sleep(3000)
             selector().text('数字看板').waitFor(5000);
             if(selector().text('数字看板').findOne(2000)){
@@ -975,14 +1114,10 @@ function runApp() {
     automator.home();
     sleep(1000);
     automator.recents();
-    if(selector().id('label').text('工作助手新').findOne(3000)){ // 如果没有已打开的应用，则不用清除
-        console.log('需要清除')
-        automator.clickCenter(selector().desc('清除全部-按钮').findOne(5000))
-        console.log('清除完毕')
-    }else{
-        automator.back()
-    }
-    sleep(1000);
+    automator.clickCenter(selector().id('clearAnimView').findOne(5000))
+    sleep(2000)
+    automator.back()
+    sleep(3000);
     loginAway = configDict['软件打开方式']//两种：1---automator.clickCenter(selector().text('工作助手新').findOne(3000))  2：app.launchApp('工作助手新')
     if(String(loginAway)==1){
         console.warn('使用第一种登录方式')
@@ -1073,13 +1208,13 @@ function main(){
         if(is_not_continue){
             var str_text =  branch_office()+'\n'+
                         branch_post_office()+'\n'+
-                        area_view()+'\n'+
                         grid_view()        +'\n'+
                         xq_marketing()       +'\n'+
                         screen_view(phone) +'\n'+
                         task_view()    +'\n'+
                         task_other()  +'\n'+
-                        mobile_kanban() +'\n'+
+                        area_view()+'\n'+
+                        // mobile_kanban() +'\n'+
                         exitApp()+'\n'+
                         '----------------------------------------------------'
             to_email(host,port,email,title,str_text,fromPseron,passw);            
@@ -1091,5 +1226,12 @@ function main(){
     automator.home();
 }
 main();
+// back_index()
+// resetDevice()
+// grid_view()
+// xq_marketing()
+// area_view()      
+// xq_marketing()
+// mobile_kanban()
 // init()
 // runApp()

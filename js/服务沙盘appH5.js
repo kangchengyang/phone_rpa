@@ -17,19 +17,15 @@ function resetDevice(){
                      //初始化文件保存路径
     console.log("----环境初始化完成----")
 }
-//打开软件
+//启动app
 function runApp() {
     automator.home();
     sleep(1000);
     automator.recents();
-    if(selector().id('label').text('工作助手新').findOne(3000)){ // 如果没有已打开的应用，则不用清除
-        console.log('需要清除')
-        automator.clickCenter(selector().desc('清除全部-按钮').findOne(5000))
-        console.log('清除完毕')
-    }else{
-        automator.back()
-    }
-    sleep(1000);
+    automator.clickCenter(selector().id('clearAnimView').findOne(5000))
+    sleep(2000)
+    automator.back()
+    sleep(3000);
     loginAway = configDict['软件打开方式']//两种：1---automator.clickCenter(selector().text('工作助手新').findOne(3000))  2：app.launchApp('工作助手新')
     if(String(loginAway)==1){
         console.warn('使用第一种登录方式')
@@ -107,7 +103,7 @@ function loginApp(phone,passw){
 //手势验证码
 function gesture_verification(){
     for(var i=0;i<3;i++){
-        automator.gesture(6000, [237,929],[561,929],[561,1253],[561,1577],[885,1577]);
+        automator.gesture(4000, [237,929],[237,1253],[237,1500],[561,1500],[885,1500]);
         if(selector().textContains('服务沙盘H5').findOne(10000)){
             console.log('验证成功')
             return true
@@ -121,7 +117,17 @@ function gesture_verification(){
 function openH5(){
     try{
         selector().text('服务沙盘H5').findOne(10000).click();
-        wait_h5 = selector().desc('即时测评').waitFor();
+        selector().text('系统登陆中...').waitFor(20000)
+        for(var i=0;i<10;i++){
+            var is_wait = selector().text('系统登陆中...').waitFor(3000)
+            if(!is_wait){
+                console.log('加载完毕')
+                break
+            }else{
+                sleep(3000)
+            }
+        }
+        selector().desc('即时测评').waitFor();
         if(selector().desc('即时测评').findOne(10000)){
             console.log('服务沙盘打开成功');
             return true
@@ -227,16 +233,61 @@ function servce_evaluation(){
     automator.back();
     sleep(2000);
     console.log('====开始固网申告量巡检====');
-    sheet = go_inspection('固网申告量','今日')
-    if(sheet=='页面加载异常'){
-        cp_str += '固网申告量数据页面未加载出来'
-    }else{
-        index = sheet
-        console.log('当前数据错误的次数'+String(index));
+    //页面变动
+    index = 0
+    try{
+        selector().textContains('固网申告量').textContains('今日').findOne().click();
+        sleep(3000)
+        for(var i=0;i<10;i++){
+            var is_wait = selector().text('数据加载中...').waitFor(3000)
+            if(!is_wait){
+                console.log('加载完毕')
+                break
+            }else{
+                sleep(3000)
+            }
+        }        
+        selector().text('全市').depth(18).waitFor(20000);
+        // for(var k=0;k<5;k++){
+        //     var gridview_child = selector().id('tableHead').findOne(3000).children()
+        //     if(gridview_child.length>3){
+        //         console.log('数据加载出来了')
+        //     }else{
+        //         selector().text('体内').findOne(3000).click()
+        //         sleep(3000)
+        //         for(var i=0;i<10;i++){
+        //             var is_wait = selector().text('数据加载中...').waitFor(3000)
+        //             if(!is_wait){
+        //                 break
+        //             }else{
+        //                 sleep(3000)
+        //             }
+        //         }
+        //         selector().text('全市').depth(18).waitFor(10000)
+        //         sleep(4000)    
+        //     }
+        // }
+        sleep(2000)
+        var city_child_list = selector().text("全市").depth(18).findOne(3000).parent().children(); //一共应该找到出来7个元素 
+        console.log(city_child_list.length)    
+        for(var i=0;i<city_child_list.length;i++){
+            var c_text = city_child_list[i].text();
+            console.log(c_text);
+            if( (String(c_text).replace('%','')=='0') || (String(c_text)=='--')){
+                index +=1;
+            }
+        }
+        console.log('完成了页面巡检')
         if(index>3){
             console.log('固网申告量页面数据异常，需要警告')
             cp_str += '固网申告量页面数据异常'
+        }else{
+            cp_str += '固网申告量页面数据正常'
         }
+    }catch(e){
+        console.log(e)
+        console.log('页面加载异常')
+        cp_str += '固网申告量数据页面未加载出来'
     }
     console.log('====固网申告量巡检完成====');
     back_index(); 
@@ -273,8 +324,7 @@ function td_service(){
     click_card('厅店服务');
     console.log('====开始厅店服务巡检====');
     var re = /[\d.]+%/g;
-    cp_str += card_inspection('客户满意率','月新增',re);
-    cp_str += card_inspection('客户投诉率','月新增',re);
+    cp_str += card_inspection('厅店即时测评','10分满意率',re)
     console.log('====厅店服务巡检完成====');
     back_index();
     return cp_str += '厅店服务巡检完成';
@@ -303,8 +353,24 @@ function forword_jf(){
 function go_inspection(param_str1,param_str2){
     var index = 0;     //统计出现错误数据的次数
     try{
-        selector().textContains(param_str1).textContains(param_str2).findOne().click();
-        selector().textContains('全市').depth(18).waitFor();
+        selector().textContains(param_str1).textContains(param_str2).findOne(3000).click();
+        sleep(3000)
+        for(var i=0;i<10;i++){
+            var is_wait = selector().text('数据加载中...').waitFor(3000)
+            if(!is_wait){
+                console.log('加载完毕')
+                break
+            }else{
+                sleep(3000)
+            }
+        }        
+        selector().text('全市').depth(18).waitFor(15000);
+        if(selector().text('全市').depth(18).findOne(3000)){
+
+        }else{
+            selector().text('地区').findOne(3000).click()
+            selector().text('全市').depth(18).waitFor(10000);
+        }
         var city_child_list = selector().text("全市").depth(18).findOne(20000).parent().children(); //一共应该找到出来7个元素     
         for(var i=0;i<city_child_list.length;i++){
             var c_text = city_child_list[i].text();
@@ -329,14 +395,24 @@ function click_card(str){
 }
 //返回主页面
 function back_index(){
-    for(var i=0;i<10;i++){
+    for(var i=0;i<5;i++){
         try{
-            if(selector().desc('即时测评').depth(20).findOne(1000)){
+            if(selector().textContains('服务沙盘（试运行）').findOne(3000)){
                 console.log('回到了首页');
                 break
             }else{
-                sleep(1000);
+                sleep(2000);
                 automator.back();
+                for(var j=0;j<10;j++){
+                    var is_wait = selector().text('系统登陆中...').waitFor(3000)
+                    if(!is_wait){
+                        console.log('加载完毕')
+                        break
+                    }else{
+                        sleep(3000)
+                    }
+                }                  
+                
             }
 
         }catch (e){
@@ -395,9 +471,9 @@ function doHandleMonth(month) {
 ///进入数据页面
 function card_inspection(param_str1,param_str2,re){
     var cp_str = ''
-    var increasing = selector().textContains(String(param_str1)).textContains(String(param_str2)).findOne().text();
-    var regex = re // 正则匹配 
     try{
+        var increasing = selector().textContains(String(param_str1)).textContains(String(param_str2)).findOne(3000).text();
+        var regex = re // 正则匹配 
         var numbers = increasing.match(regex);
         for(var i=0; i<numbers.length;i++){
             console.log(numbers[i])
@@ -496,20 +572,8 @@ function readConfig(configPath){
 
 //退出帐户
 function exitApp(){
+    selector().text('返回').findOne(3000).click()
     var xj_str = ''
-    for(var i=0;i<5;i++){
-        try{
-            if(selector().text('工作台').findOne(2000)){
-                console.log('回到了工作助手首页');
-                break
-            }else{
-                automator.back();
-                sleep(1000);
-            }
-        }catch (e){
-            continue
-        }
-    }
     console.log('----开始退出账号----')
     sleep(3000)
     try{
@@ -572,7 +636,10 @@ function main(){
        var email = configDict['email']
        var passw = configDict['邮件密码']
        var fromPseron = configDict['发件人']
-       runApp()
+        if(!runApp()){
+            is_not_continue = false
+            app_str+='打开软件失败'
+        }
        if(loginApp(String(configDict['登录账号']),String(configDict['验证码']))){
             console.log('登录成功')
         }else{
@@ -582,10 +649,10 @@ function main(){
         }
         if(is_not_continue){
             if(openH5()){
-                console.log('营销沙盘H5打开成功')
+                console.log('服务沙盘H5打开成功')
             }else{
-                console.log('营销沙盘H5打开失败，未找到该选项')
-                app_str +='营销沙盘H5打开失败，未找到该选项'
+                console.log('服务沙盘H5打开失败，未找到该选项')
+                app_str +='服务沙盘H5打开失败，未找到该选项'
                 is_not_continue = false
             }
         }
@@ -597,7 +664,7 @@ function main(){
                         td_service()       +'\n'+
                         forword_jf()       +'\n'+
 						exitApp()          +'\n'+
-						----------------------------------------------------
+						'----------------------------------------------------'
             to_email(host,port,email,title,str_text,fromPseron,passw);
         }else{
             to_email(host,port,email,title,app_str,fromPseron,passw);
@@ -607,6 +674,8 @@ function main(){
 }
 main();
 // resetDevice()
+// openH5()
+// instant_evaluation()
 // init()
 // runApp()
 // loginApp(String(configDict['登录账号']),String(configDict['验证码']))

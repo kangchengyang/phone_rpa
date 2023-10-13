@@ -1494,10 +1494,10 @@ function main(){
         }else{
             readExcel(path,sheetNames)
         }
-        // if(!runApp()){
-        //     is_not_continue = false
-        //     app_str+='打开软件失败'
-        // }
+        if(!runApp()){
+            is_not_continue = false
+            app_str+='打开软件失败'
+        }
         if(is_not_continue){
             console.log('开始登录')
             if(loginApp(String(configDict['登录账号']),String(configDict['验证码']))){
@@ -1517,7 +1517,6 @@ function main(){
                 is_not_continue = false
             }
         }
-        exitApp()
         if(is_not_continue){
             var str_text =  user_development()+'\n'+
                         kilomega_5G()+'\n'+
