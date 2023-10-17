@@ -3,11 +3,11 @@ appVersion = '3.0.04'
 fileDownloadPath = "/storage/emulated/0/rpa/config"
 //配置表路径
 configPath = fileDownloadPath+'/'+'配置表'+ '_模板.xls'
+// phone = '18908321737'
 //配置参数
 configDict = {}
 //对照表
 dataDict = {}
-// phone = '17725147730'
 /*初始化*/
 function resetDevice(){
     console.show()     //显示控制台
@@ -16,6 +16,25 @@ function resetDevice(){
     //closeApp()       //关闭后台所有未锁定的App
                      //初始化文件保存路径
     console.log("----环境初始化完成----")
+}
+order_view()
+territory_view()
+performance_view()
+//打开软件
+//版本3.0.04
+function openApp(){
+    app.launchApp(appName)
+    selector().text('工作助手').depth(9).findOne().waitFor();
+    if(selector().text('工作助手').depth(9).findOne()){
+        console.log('打开软件成功！')
+        return true
+    }else{
+        console.log('打开软件失败！')
+        return false
+    }
+    
+    //loginApp()/*登录软件*/
+               //打开服务沙盘H5
 }
 //登录工作助手
 function loginApp(phone,passw){
@@ -76,7 +95,7 @@ function loginApp(phone,passw){
 //手势验证码
 function gesture_verification(){
     for(var i=0;i<3;i++){
-        automator.gesture(4000, [237,929],[237,1253],[237,1500],[561,1500],[885,1500]);
+        automator.gesture(6000, [237,929],[237,1253],[237,1577],[561,1253],[885,929]);
         if(selector().textContains('工作台').findOne(10000)){
             console.log('验证成功')
             return true
@@ -89,11 +108,12 @@ function gesture_verification(){
 //打开营销沙盘沙盘H5
 function openH5(){
     try{
-        selector().text('营销沙盘H5').depth(13).findOne(10000).click();
-        selector().text('分公司视图').waitFor();
-        if(selector().text('分公司视图').findOne(10000)){
+        selector().text('工作台').findOne(10000).click();
+        sleep(2000)
+        if(selector().text('营销沙盘H5').findOne(2000)){
+            selector().text('营销沙盘H5').findOne(3000).click()
             console.log('营销沙盘H5打开成功');
-            sleep(3000)
+            sleep(2000)
             return true
         }else{
             return false
@@ -102,857 +122,389 @@ function openH5(){
         return false
     }
 
-    
 }
-//公司视图页面
-function branch_office(){
-    console.log('====开始分公司视图巡检====')
-    var xj_str = '      ====开始分公司视图巡检====\n'
-    var is_not_continue = true
-    for(var i=0;i<3;i++){
-        try{
-            selector().text('分公司视图').findOne(1000).click();
-            sleep(3000)
-            for(var i=0;i<10;i++){
-                var is_wait = selector().text('加载中...').waitFor(3000)
-                if(!is_wait){
-                    console.log('加载完毕')
-                    break
-                }else{
-                    sleep(3000)
-                }
-            }            
-            sleep(1000)
-            selector().text('渝北').findOne(1000).click();
-            sleep(5000)            
-            automator.back()
-            sleep(3000)
-            automator.clickCenter(selector().textContains('入住住户数(收集):').find()[0])
-            sleep(4000)
-            for(var i=0;i<10;i++){
-                var is_wait = selector().text('加载中...').waitFor(3000)
-                if(!is_wait){
-                    console.log('加载完毕')
-                    break
-                }else{
-                    sleep(3000)
-                }
-            }
-            break;
-        }catch(e){
-            console.log('页面还未加载出来,需要延迟2s')
-            automator.swipeUp();//下拉一下
-            is_not_continue = false
-            sleep(2000)
-        }
-    }
-    if(is_not_continue){
-        console.log('进入分公司页面成功，开始循环判断是否加载出来了数据')
-        sleep(2000)
-        for(var i=0;i<5;i++){
-            text_str = selector().text('总房间数(计算)').depth(7).findOne(2000).next().text();
-            console.log(text_str)
-            if(text_str=='--'){
-                is_not_continue = false;
-                automator.swipeUp();//下拉一下
-                sleep(2000);
-            }else{
-                is_not_continue = true;
-                break;
-            }
-        }
-    }else{
-        back_index()
-        return xj_str +='分公司视图，页面加载异常。'
-    }
-    if(is_not_continue){
-        var insp_str = inspection()
-        xj_str +=insp_str
-        console.log('====分公司视图巡检完成====')
-        back_index()
-        return xj_str+='分公司视图巡检完成。'
-    }
-
-}
-//支局视图
-function branch_post_office(){
-    console.log('====开始支局视图巡检====')
-    var jx_str = '      ====开始支局视图巡检====\n'
-    var is_not_continue = true
-    selector().text('支局视图').findOne(5000).click();
-    sleep(2000)
-    for(var i=0;i<10;i++){
-        var is_wait = selector().text('加载中...').waitFor(3000)
-        if(!is_wait){
-            console.log('加载完毕')
-            break
-        }else{
-            sleep(3000)
-        }
-    }
-    console.log('开始循环判断是否加载出来了页面')
-    for(var i=0;i<3;i++){
-        if(selector().textContains('入住住户数(收集):').find()[0]){
-            is_not_continue = true
-            break
-        }else{
-            is_not_continue = false
-            automator.swipeUp();//下拉一下
-            sleep(4000)
-        }
-    }
-    if(is_not_continue){
-        console.log('加载出来了页面')
-        sleep(2000)
-        selector().textContains('入住住户数(收集):').find()[0].click();
-        sleep(2000)       
-        automator.back()
-        sleep(2000)
-        automator.clickCenter(selector().textContains('入住住户数(收集):').find()[0])
-        sleep(5000)
-        for(var i=0;i<10;i++){
-            var is_wait = selector().text('加载中...').waitFor(3000)
-            if(!is_wait){
-                console.log('加载完毕')
-                break
-            }else{
-                sleep(3000)
-            }
-        } 
-        for(var i=0;i<10;i++){
-            text_str = selector().text('总房间数(计算)').depth(7).findOne(2000).next().text();
-            console.log(text_str)
-            if(text_str=='--'){
-                is_not_continue = false;
-                automator.swipeUp();//下拉一下
-                sleep(4000);
-            }else{
-                is_not_continue = true;
-                break;
-            }
-        }  
-    }else{
-        is_not_continue = false
-        return  jx_str +='支局页面加载异常。'
-    }
-    if(is_not_continue){
-        var insp_str = inspection()
-        jx_str +=insp_str
-        console.log('====支局视图巡检完成=====')
-        back_index()
-        return jx_str+='支局视图巡检完成。'
-    }else{
-        back_index()
-        return xj_str +='支局视图，页面加载异常，'
-    }
-}
-//片区视图
-function area_view(){
-    var xj_str = '      ====开始片区视图巡检====\n'
-    var is_not_continue = true
-    console.log('====开始片区视图巡检====')
+//工单页面
+function order_view(){
+    console.log('====开始工单页面巡检====')
+    var xj_str = '      ====开始工单页面巡检====\n'
     try{
-        selector().text('首页').findOne(3000).click()
-        sleep(2000)
-        selector().text('片区视图').findOne(5000).click();
-        for(var i=0;i<10;i++){
-            var is_wait = selector().text('加载中...').waitFor(3000)
-            if(!is_wait){
-                console.log('加载完毕')
-                break
-            }else{
-                sleep(3000)
+        selector().text('工单').findOne(3000).click()
+        order_list = selector().text('智慧营维').findOne(3000).parent().parent().children();
+        console.log(order_list.length)
+        is_not_order = false
+        for(var i=0;i<order_list.length;i++){
+            if(i==0){
+                continue
             }
-        }         
-        sleep(2000)
-        selector().text('片区视图').findOne(2000).next().click();
-        sleep(2000)
-        automator.gesture(1000, [900, 2001], [900, 2800]);
-        sleep(2000)
-        selector().text('确定').findOne(2000).click();
-        sleep(4000)
-        for(var i=0;i<10;i++){
-            var is_wait = selector().text('加载中...').waitFor(3000)
-            if(!is_wait){
-                console.log('加载完毕')
-                break
-            }else{
-                sleep(3000)
-            }
-        }        
-        console.log('选择全部完成，开始循环判断是否加载出来了页面')
-        for(var i=0;i<3;i++){
-            if(selector().textContains('入住住户数(收集):').find()[0]){
-                console.log('页面加载出来了')
-                is_not_continue = true
-                break
-            }
-            else{
-                is_not_continue = false
-                automator.swipeUp();//下拉一下
-                sleep(4000)
-            }
-        }
-        if(is_not_continue){
-            sleep(1000)
-            selector().textContains('入住住户数(收集):').find()[0].click();
-            console.log('点击完成')
-            sleep(4000)
-            for(var j=0;j<10;j++){
-                var is_wait = selector().text('加载中...').waitFor(3000)
-                if(!is_wait){
-                    console.log('加载完毕')
-                    break
-                }else{
-                    sleep(3000)
-                }
-            }
-            sleep(2000)
-            for(var j=0;j<10;j++){
-                text_str = selector().text('总房间数(计算)').depth(7).findOne(2000).next().text();
-                console.log(text_str)
-                if(text_str=='--'){
-                    is_not_continue = false;
-                    automator.swipeUp();//下拉一下
-                    sleep(4000);
-                }else{
-                    is_not_continue = true;
-                    break;
-                }
-            }
-        }else{
-            console.log('片区视图页面加载异常')
-            back_index()
-            return xj_str+='片区视图页面加载异常。'
-        }if(is_not_continue){
-            var insp_str = inspection()
-            xj_str +=insp_str
-            console.log('====片区视图巡检完成====')
-            back_index()
-            return xj_str+='片区视图巡检完成。'
-        }
-    }catch(e){
-        console.log(e)
-        back_index()
-        return xj_str+='片区视图页面元素查找异常，可能是页面发生了变动或者升级。'
-    }
-}
-
-
-//网格视图
-function grid_view(){
-    var xj_str = '      =====开始网格视图巡检====\n'
-    var is_not_continue = true
-    console.log('====开始网格视图巡检====')
-    try{
-        selector().text('网格视图').findOne(5000).click();
-        sleep(2000)
-        for(var i=0;i<10;i++){
-            var is_wait = selector().text('加载中...').waitFor(3000)
-            if(!is_wait){
-                console.log('加载完毕')
-                break
-            }else{
-                sleep(3000)
-            }
-        }        
-        console.log('开始循环判断是否加载出来了页面')
-        for(var i=0;i<3;i++){
-            if(selector().textContains('入住住户数(收集):').find()[0]){
-                is_not_continue = true
-                console.log('页面加载出来了')
-                break;
-            }
-            else{
-                is_not_continue = false
-                automator.swipeUp();//下拉一下
-                sleep(4000)
-            }
-        }
-        if(is_not_continue){
-            sleep(3000)
-            var grid = selector().textContains('入住住户数(收集):').find()
-            for(var j=0;j<grid.length;j++){
-                if(grid[j].prev().text().indexOf('未归类')==-1){
-                    console.log(grid[j].prev().text())
-                    grid[j].click();
-                    console.log('点击成功')
-                    break;                
-                }
-            }
-            sleep(4000)
-            for(var i=0;i<10;i++){
-                var is_wait = selector().text('加载中...').waitFor(3000)
-                if(!is_wait){
-                    console.log('加载完毕')
-                    break
-                }else{
-                    sleep(3000)
-                }
-            }
-            sleep(5000)
-            for(var i=0;i<10;i++){
-                var is_wait = selector().text('加载中...').waitFor(3000)
-                if(!is_wait){
-                    console.log('加载完毕')
-                    break
-                }else{
-                    sleep(3000)
-                }
-            }                     
-            for(var i=0;i<3;i++){
-                try{
-                    text_str = selector().text('总房间数(计算)').depth(7).findOne(2000).next().text();
-                    console.log(text_str)
-                    if(text_str=='--'){
-                        is_not_continue = false;
-                        automator.swipeUp();//下拉一下
-                        sleep(2000);
-                    }else{
-                        is_not_continue = true;
-                        break;
-                    }
-                }catch(e){
-                    continue
-                }
-
-            } 
-
-        }else{
-            console.log('网格视图页面加载异常')
-            back_index()
-            return xj_str+='网格视图页面加载异常。'
-        }
-        if(is_not_continue){
-            var insp_str = inspection()
-            xj_str +=insp_str
-            console.log('====网格视图巡检完成====')
-            back_index()
-            return xj_str+='网格视图巡检完成'
-        }else{
-            console.log('网格视图页面数据加载异常')
-            back_index()
-            return xj_str+='网格视图页面数据加载异常。'
-        }
-    }catch(e){
-        console.log(e)
-        back_index()
-        return xj_str+='网格视图页面元素查找异常，可能是页面发生了变动或者升级。'
-    }
-
-} 
-//小区营销
-function xq_marketing(){
-    var xj_str ='      ====开始小区营销视图巡检====\n'
-    var is_not_continue = true
-    console.log('=====开始小区营销视图巡检====')
-    try{
-        sleep(2000)
-        selector().text('小区营销').findOne(5000).click();
-        sleep(2000)
-        for(var i=0;i<10;i++){
-            var is_wait = selector().text('加载中...').waitFor(3000)
-            if(!is_wait){
-                console.log('加载完毕')
-                break
-            }else{
-                sleep(3000)
-            }
-        }        
-        console.log('开始循环判断是否加载出来了页面')
-        sleep(2000)   
-        for(var i=0;i<3;i++){
-            if(selector().textContains('入住住户数(收集):').find()[0]){
-                is_not_continue = true
-                console.log('页面加载出来了')
-                break;
-            }
-            else{
-                is_not_continue = false
-                automator.swipeUp();//下拉一下
-                sleep(4000)
-            }
-        }
-        if(is_not_continue){
-            sleep(3000)
-            var grid = selector().textContains('入住住户数(收集):').find()
-            var str_click = ''
-            for(var j=0;j<grid.length;j++){
-                if(grid[j].prev().prev().prev().text().indexOf('大学')==-1){
-                    console.log(grid[j].prev().prev().prev().text())
-                    str_click = grid[j].prev().prev().prev().text()
-                    grid[j].click();
-                    sleep(2000)
-                    automator.back()
-                    selector().text('小区营销').waitFor(1000)
-                    sleep(1000)
-                    break;                
-                }
-            }
-            sleep(2000)
-            automator.clickCenter(selector().text(str_click).findOne(3000))
-            sleep(2000)  
-            automator.gesture(2000, [561,1253],[561,900]);
-            sleep(3000)
-            for(var i=0;i<10;i++){
-                var is_wait = selector().text('加载中...').waitFor(3000)
-                if(!is_wait){
-                    console.log('加载完毕')
-                    break
-                }else{
-                    sleep(3000)
-                }
-            }            
-            console.log('开始循环判断是否进入成功')
-            for(var i=0;i<5;i++){
-                if(selector().text('收集').find()){
-                    console.log('进入页面成功')
-                    is_not_continue = true
-                    break
-                }else{
-                    is_not_continue = false;
-                    automator.swipeUp();//下拉一下
-                    sleep(4000);
-                }
-            }
-            if(is_not_continue){
-                console.log('开始等待页面加载')
-                selector().text('小区指标').waitFor(); ///等待住户信息加载完成
-                automator.swipeDown()   //向上滑动
-                var grid = selector().text('收集').find()
-                for(var j=0;j<grid.length;j++){
-                    if(grid[j].prev().prev().text().indexOf('EPON')==-1){
-                        console.log(grid[j].prev().prev().text())
-                        grid[j].parent().click();
-                        break;                
-                    }
-                }
-                selector().text('住户画像').waitFor()
-                sleep(3000)
-                info_str = selector().textContains('积分').textContains('身份证后六位').findOne(10000).text();//巡检住户信息
-                //积分： 11217| 身份证后六位：231245
-                var str_1 = '住户信息数据显示正常,'               
-                matches_list = extractNumbers(info_str)
-                for(var k=0;k<matches_list.length;k++){
-                    if(matches_list[k]=='--' ||  matches_list[k]=='0'){
-                        console.log('住户信息数据显示异常')
-                        str_1 = '住户信息数据显示异常,'
-                        break
-                    }
-                }
-                console.log(str_1)
-                xj_str +=str_1
-                selector().text('用户画像').findOne(4000).click();
-                sleep(3000)
-                automator.swipeDown()   //向上滑动
-                tc_list = selector().text('主套餐:').depth(9).find()
-                info_str2 = '用户画像信息显示正常,'
-                for(var i=0;i<tc_list.length;i++){
-                    if(tc_list[i].prev().text()=='--' || tc_list[i].prev().text()=='0'){
-                        console.log('用户画像信息显示异常')
-                        info_str2 ='用户画像信息显示异常,'
-                        break
-                    }
-                    if(tc_list[i].next().text().indexOf('宽带')=='-1' && tc_list[i].next().text().indexOf('高清')=='-1' && tc_list[i].next().text().indexOf('套餐')!='-1'){
-                        console.log(tc_list[i].next().text())
-                        tc_list[i].prev().click();
-                        sleep(3000)
-                        if(selector().text('是否拨打').findOne(4000)){
-                            sleep(1000)
-                            selector().text('是否拨打').findOne(2000).next().next().click();
-                            sleep(1000)
-                            xj_str+='外呼正常弹出,'
-                        }else{
-                            xj_str+='外呼不能正常弹出,'
-                        }
-                        break;
-                    }
-                }
-                console.log(info_str2)
-                xj_str+=info_str2
-                console.log('用户画像巡检完成')
-                automator.back();//返回上级
-                sleep(3000);
-                console.log('开始巡检筛选功能')
-                try{
-                    selector().text('场景').depth(7).findOne(10000).click();
-                    sleep(1000)
-                    selector().className('android.widget.Button').text('确定').waitFor();
-                    automator.clickCenter(selector().text('分公司自定义').findOne(10000))
-                    sleep(2000)
-                    automator.clickCenter(selector().text('全选').findOne(10000))
-                    sleep(1000)
-                    selector().className('android.widget.Button').text('确定').findOne(10000).click();                    
-                    xj_str+='筛选功能正常,'
-                    console.log('筛选功能正常')
-                }catch(e){
-                    console.log('小区营销的筛选功能异常')
-                    xj_str+='小区营销的筛选功能异常,'
-                }
-                automator.back();//返回上级
-                console.log('====小区营销巡检完成====')
-                return xj_str+='小区营销巡检完成。'
-            }else{
-                console.log('小区信息页面加载异常')
-                back_index()//回到主页
-                return xj_str+='小区信息页面加载异常。' 
-            }
-        }else{
-            console.log('小区营销页面加载异常')
-            back_index()
-            return xj_str+='小区营销页面加载异常。'            
-        }            
-    }catch(e){
-        console.log('出现错误')
-        console.log(e)
-        back_index();
-        return xj_str+='小区营销页面元素查找异常，可能是页面发生了变动或者升级。'
-    }
-}
-//筛选功能
-function screen_view(phone){
-    console.log('====筛选功能巡检开始====')
-    var xj_str = '      ====筛选功能巡检开始====\n'
-    var is_not_continue = true
-    try{
-        selector().text('筛选').findOne(5000).parent().click();
-        selector().text('高级筛选').waitFor(10000);
-        selector().text('搜索').findOne(5000).prev().children()[1].setText(String(phone))
-        sleep(3000)
-        automator.clickCenter(selector().text('搜索').findOne(3000))
-        sleep(5000)
-        try{
-            var serach_str = selector().text('查询结果').findOne(2000).next().children()[0].children()[0].children()[0].children()[0].text()
-            if(serach_str=''){
-                console.log(serach_str)
-                is_not_continue = true
-            }
-            
-        }catch(e){
-            is_not_continue = false
-            console.log('未搜索出结果，或者元素查找失败')
-        }
-        if(is_not_continue){
-            console.log('搜索出来了结果');
-            console.log('开始点击进入')
-            xj_str +='搜索功能正常,'
-            automator.clickCenter(selector().text('搜索历史').findOne(3000).prev())
-            selector().text('住户画像').waitFor()
-            sleep(3000)
-            xj_str +='搜索功能正常,'
-            info_str = selector().textContains('积分').textContains('身份证后六位').findOne(10000).text();//巡检住户信息
-            //积分： 11217| 身份证后六位：231245
-            var str_1 = '搜索界面跳转住户画像正常'               
-            matches_list = extractNumbers(info_str)
-            for(var k=0;k<matches_list.length;k++){
-                if(matches_list[k]=='--' ||  matches_list[k]=='0'){
-                    console.log('住户信息数据显示异常')
-                    str_1 = '住户信息数据显示异常,'
-                    break
-                }
-            }
-            console.log(str_1)
-            xj_str +=str_1
-            console.log('====筛选功能巡检完成====')
-            back_index();
-            return xj_str+='筛选功能巡检完成。'
-        }else{
-            console.log('搜索功能异常')
-            back_index();
-            return xj_str+='搜索功能异常'
-        }
-        
-    }catch(e){
-        console.log(e)
-        console.log('筛选功能的界面元素查找异常，可能是页面变动或者升级')
-        back_index();
-        return xj_str+='筛选功能的界面元素查找异常，可能是页面变动或者升级'
-    }
-   
-
-}
-//任务功能_拆机工单
-function task_view(){
-    console.log('====拆机工单巡检开始====')
-    var xj_str = '      ====拆机工单巡检开始====\n'
-    var is_not_continue = true
-    try{
-        selector().text('任务').findOne(5000).parent().click();
-        selector().text('已完成').waitFor(10000);
-        selector().text('任务跟踪').findOne(3000).next().click();
-        sleep(3000)
-        selector().className('android.widget.Button').text('拆机咨询').findOne(2000).click();
-        sleep(2000);
-        var branch_post = selector().text('支局：').findOne(2000).next().text();
-        console.log(branch_post)
-        if(branch_post.indexOf('全部')==-1){
-            console.log('没有筛选到全部需要选择全部');
-            selector().text('支局：').findOne(2000).next().click();
-            sleep(2000);
-            for(var i=0;i<4;i++){   //向上滑动-----最顶上为全部
-                automator.gesture(1000, [900, 2001], [900, 2800]);
+            if(order_list[i].children().length==2 && order_list[i].children()[0].text().indexOf('工单类型')==-1){
+                console.log(order_list[i].children()[0].text())
+                order_list[i].children()[0].click()
                 sleep(1000)
-            }
-            selector().text('确定').findOne(2000).click();
-        }
-        sleep(1000)
-        selector().text('确 认').findOne(2000).click();
-        sleep(2000)
-        console.log('开始循环判断是否加载出来了数据')
-        for(var i=0;i<10;i++){
-            var is_wait = selector().text('加载中...').waitFor(3000)
-            if(!is_wait){
-                console.log('加载完毕')
-                break
-            }else{
-                sleep(3000)
-            }
-        }       
-        for(var i=0;i<8;i++){
-            if(selector().textContains('待执行：').findOne(2000)){
-                is_not_continue = true
-                break
-            }else{
-                is_not_continue = false
-                automator.swipeUp();//下拉一下
-                sleep(4000)               
-            }
-        }
-        if(is_not_continue){
-            console.log('加载出来了页面')
-            console.log('开始点击待执行项')
-            selector().textContains('待执行：').findOne(2000).click();
-        }else{
-            console.log('拆机工单的筛选功能未加载出数据')
-            back_index();
-            return xj_str+='拆机工单的筛选功能未加载出数据'            
-        }
-        console.log('开始循环判断是否成功跳转')
-        for(var j=0;j<8;j++){
-            if(selector().textContains('当前处理人：').findOne(2000)){
-                is_not_continue = true
-                break               
-            }else{
-                is_not_continue = false
-                automator.swipeUp();//下拉一下
-                sleep(4000)                  
-            }
-        }
-        if(is_not_continue){
-            console.log('处理人页面加载出来了')
-            sleep(2000)
-            selector().textContains('当前处理人：').findOne(2000).click();
-            sleep(2000)
-            selector().text('转派').findOne(2000).parent().prev().click();
-            sleep(5000)
-            automator.back()
-            sleep(3000)
-            automator.clickCenter(selector().text('转派').findOne(2000).parent().prev())
-            console.log('2次点击')
-            sleep(2000)
-            selector().text('用户画像').waitFor()
-            if(selector().text('用户画像').findOne(3000)){
-                xj_str+='处理人界面跳转用户画像功能正常,'
-            }
-            sleep(3000)
-            info_str = selector().textContains('积分').textContains('身份证后六位').findOne(10000).text();//巡检住户信息
-            console.log(info_str)
-            //积分： 11217| 身份证后六位：231245
-            var str_1 = '住户信息数据显示正常,'               
-            matches_list = extractNumbers(info_str)
-            for(var k=0;k<matches_list.length;k++){
-                if(matches_list[k]=='--' ||  matches_list[k]=='0'){
-                    console.log('住户信息数据显示异常')
-                    str_1 = '住户信息数据显示异常,'
-                    break
+                if(selector().className('android.widget.GridView').findOne(2000)){
+                    console.log(order_list[i].children()[0].text()+': 有数据')
+                    is_not_order = true
                 }
             }
-            xj_str+=str_1
-            back_index();     //返回主页
-            return xj_str+='拆机工单巡检完成。'       
+        }
+        if(is_not_order){
+            console.log('工单页面巡检完成，有数据页面显示正常')
+            xj_str+='工单页面巡检完成，有数据页面显示正常'
         }else{
-            console.log('拆机工单的处理人界面未加载出数据')
-            back_index();
-            return xj_str+='拆机工单的处理人界面未加载出数据'       
+            console.log('工单页面巡检完成，页面没有数据')
+            xj_str+='工单页面巡检完成，页面没有数据'
         }
     }catch(e){
-            console.log('任务功能中的拆机工单的界面元素查找异常，可能是页面变动或者升级')
-            back_index();
-            return xj_str+='任务功能中的拆机工单的界面元素查找异常，可能是页面变动或者升级' 
-    } 
+        console.log('工单页面，查找元素异常，可能是页面发生了变动或者升级')
+        xj_str+='工单页面，查找元素异常，可能是页面发生了变动或者升级'
+    }finally{
+        return xj_str+='工单页面巡检完成'
+    }
+
 }
-//任务功能其他工单
-function task_other(){
-    console.log('====任务功能其他工单巡检开始====')
-    var xj_str = '      ====任务功能其他工单巡检开始====\n'
+//地盘页面
+function territory_view(){
+    console.log('====开始地盘页面巡检====')
+    var xj_str = '      ====开始地盘页面巡检====\n'
     var is_not_continue = true
     try{
-        selector().text('任务').findOne(5000).parent().click();
-        selector().text('已完成').waitFor(10000);
-        selector().text('任务跟踪').findOne(3000).next().click();
-        sleep(3000)
-        but_lsit = selector().className('android.widget.Button').text('拆机咨询').findOne(2000).parent().children();
-        for(var i=0;i<but_lsit.length;i++){
-            if(but_lsit[i].text().indexOf('拆机咨询')!=-1){
-                continue;
-            }else{
-                console.log(but_lsit[i].text())
-                selector().className('android.widget.Button').text(but_lsit[i].text()).findOne(2000).click()
-                selector().text('确 认').findOne(2000).click();
-                sleep(2000)
-                console.log('开始循环判断是否加载出来了数据')
-                for(var j=1;j<3;j++){
-                    if(selector().textContains('待执行：').findOne(2000) || selector().textContains('待处理：').findOne(2000)){
-                        is_not_continue = true
-                        break
-                    }else{
-                        is_not_continue = false
-                        automator.swipeUp();//下拉一下
-                        sleep(1000)               
-                    }
-                }
-                if(is_not_continue){
-                    console.log('加载出来了页面')
-                    xj_str+=(but_lsit[i].text()+'数据显示页面正常,')
-                    sleep(1000)
-                    selector().text('任务跟踪').findOne(3000).next().click();
-                    sleep(1000)
-                }else{
-                    console.log(but_lsit[i].text()+'的筛选功能未加载出数据')
-                    back_index();
-                    xj_str+=(but_lsit[i].text()+'的筛选功能未加载出数据,')
-                    selector().text('任务跟踪').findOne(3000).next().click();
-                    sleep(1000)            
-                }            
+        selector().text('地盘').findOne(2000).click();
+        if(selector().text('我的地盘').findOne(8000)){
+            is_not_continue = true
+        }else{
+            is_not_continue = false
+        }
+        if(is_not_continue){
+            console.log('跳转页面成功')     
+
+        }else{
+            console.log('跳转页面失败')
+            xj_str +='跳转页面失败'
+        }
+        //网格视图
+        console.log('------网格视图------')
+        xj_str+=inspection('网格视图')
+        //小区视图
+        selector().text('小区视图').findOne(3000).click()
+        console.log('------小区视图------')
+        var str_list = []
+        str_list.push(selector().text('计算房间').findOne(3000).next().text())
+        str_list.push(selector().text('收集房间').findOne(3000).next().text())
+        str_list.push(selector().text('电表房间').findOne(3000).next().text())
+        console.log(str_list)
+        var num = 0
+        for(var i=0;i<str_list.length;i++){
+            if(str_list[i]=='--' || str_list[i]=='0'){
+                num+=1
             }
         }
-        selector().text('取 消').findOne(2000).click();
-        return xj_str +='任务功能其他工单巡检完成。' 
-    }catch(e){
-        console.log('任务功能中的其他工单的界面元素查找异常，可能是页面变动或者升级')
-        return xj_str+='任务功能中的其他工单的界面元素查找异常，可能是页面变动或者升级'       
-    }
-}
-//移动看板
-function mobile_kanban(){
-    var xj_str = '      ====移动看板巡检====\n'
-    try{
-        console.log('----开始数字看板巡检----')
-        var is_not_continue = true
-        if(selector().text('首页').findOne(5000)){
-            selector().text('首页').findOne(2000).click();
-            sleep(2000)
-            //数字看板
-            automator.clickCenter(selector().className('android.widget.ListView').findOne(2000).children()[1].children()[0])
-            sleep(3000)
-            selector().text('数字看板').waitFor(5000);
-            if(selector().text('数字看板').findOne(2000)){
-                console.log('跳转数字看板成功')
-                xj_str+='跳转数字看板成功,'
+        if(num>=3){
+            console.log('小区视图基础信息页面数据异常')
+            xj_str+='小区视图基础信息页面数据异常,'
+        }else{
+            xj_str+='小区视图基础信息页面数据正常,'
+        }
+        xj_str+=inspection('小区视图')
+        //用户列表
+        console.log('----开始用户列表页面巡检----')
+        selector().text('用户列表').findOne(3000).click()
+        sleep(2000)
+        if(selector().className('android.widget.Button').text('收集').findOne(8000)){
+            console.log('跳转用户列表页面成功')
+            xj_str+='跳转用户列表页面成功'
+            selector().className('android.widget.Button').text('收集').findOne(8000).parent().click()
+            sleep(5000)
+            if(selector().text('看接触').findOne(8000)){
+                console.log('跳转住户画像页面成功')
+                xj_str+='跳转住户画像页面成功，'
                 is_not_continue = true
             }else{
-                console.log('未能成功跳转数字看板')
-                xj_str+='未能成功跳转数字看板,'
-                is_not_continue = false
+                console.log('跳转住户画像页面异常')
+                xj_str+='跳转住户画像页面异常，'
+                is_not_continue = false                
             }
-            if(is_not_continue){ 
-                var str_dx = selector().text('电信份额').find()
-                for(var i=0;i<str_dx.length;i++){
-                    console.log(str_dx[i].prev().text())
-                    
-                    if(str_dx[i].prev().text()=='--' || str_dx[i].prev().text().match(/\d+\.\d+/)[0]=='0'){
-                        console.log('数字看板数据显示异常')
-                        xj_str+='数字看板数据显示异常,'
-                        break
-                    }
+        }else{
+            console.log('跳转用户列表页面失败')
+            xj_str+='跳转用户列表页面失败'
+        }
+        if(is_not_continue){
+            console.log('----开始住户画像界面巡检----')
+            //身份证
+            var str_id_card = selector().text('身份证').findOne(3000).next().text()
+            console.log(str_id_card)
+            //积分
+            var str_inter = selector().text('积分').findOne(3000).next().text()
+            console.log(str_inter)
+            if((str_id_card=='--' || str_id_card=='0') && str_inter=='--'){
+                console.log('住户画像数据异常')
+                xj_str+='住户画像数据异常,'
+            }else{
+                console.log('住户画像数据显示正常')
+                xj_str+='住户画像数据显示正常,'
+            }
+            /************看套餐************* */
+            console.log('----开始巡检看套餐----')
+            // selector().text('看套餐').findOne(3000).click()
+            sleep(2000)
+            try{
+                console.log(selector().text('主套餐').findOne(3000).next().text())
+                if(selector().text('主套餐').findOne(3000).next().text()=='--'){
+                    xj_str+='套餐情况列表数据加载异常'
+                    console.log('套餐情况列表数据加载异常,')
+                }else{
+                    xj_str+='套餐情况列表数据正常'
+                    console.log('套餐情况列表数据正常,')                
                 }
-                xj_str+='数字看板数据加载正常,'
+            }catch(e){
+                console.log(e)
+                xj_str+='套餐情况列表查找元素异常'
+                console.log('套餐情况列表查找元素异常,')                
+            }
+            //看设备
+            try{
+                selector().text('看设备').findOne(3000).click()
+                sleep(2000)
+                console.log(selector().text('换机时间').findOne(3000).next().text())
+                if(selector().text('换机时间').findOne(3000).next().text().indexOf('--')==-1){
+                    xj_str+='设备情况列表数据正常'
+                    console.log('设备情况列表数据正常,')                 
+                }else{
+                    xj_str+='设备情况列表数据异常'
+                    console.log('设备情况列表数据异常,')                 
+                }
+            }catch(e){
+                console.log(e)
+                xj_str+='设备情况列表查找元素异常'
+                console.log('设备情况列表查找元素异常,')                  
+            }
+            //看接触
+            try{
+                selector().text('看接触').findOne(3000).click();
+                sleep(3000)
+                console.log(selector().text('用户积分').findOne(3000).next().text())
+                if(selector().text('用户积分').findOne(3000).next().text()=='--'){
+                    xj_str+='看接触列表数据异常'
+                    console.log('看接触列表数据异常,')
+                }else{
+                    xj_str+='看接触列表数据正常'
+                    console.log('看接触列表数据正常,')
+                }
+            }catch(e){
+                console.log(e)
+                xj_str+='看接触列表查找元素异常'
+                console.log('看接触列表查找元素异常,')           
             }
             back_index();
-            return xj_str+='数字看板巡检完成。'
-        }else{
-            console.log('未能找到首页按钮，移动看板巡检失败')
-            xj_str+='未能找到首页按钮，移动看板巡检失败。'
-            return xj_str
+            xj_str+='地盘巡检完成。'
         }
     }catch(e){
-            console.log('移动看板页面中查找元素失败，可能是页面发生了变动或者升级。')
-            return xj_str+='移动看板页面中查找元素失败，可能是页面发生了变动或者升级。' 
-                 
+        console.log('地盘页面查找元素异常，可能是页面发生了变动，或者升级')
+        xj_str +='地盘页面查找元素异常，可能是页面发生了变动，或者升级'
+    }finally{
+        return xj_str+='地盘巡检完成'
+    }
+}
+//业绩巡检
+function performance_view(){
+    console.log('====开始业绩巡检====')
+    var xj_str = '====开始业绩巡检====\n'
+    try{
+        selector().text('业绩').findOne(3000).parent().click()
+        selector().text('我的业绩').waitFor()
+        //网格积分
+        console.log('----开始网格积分巡检----\n')
+        try{
+             xj_str+='----网格积分----\n'
+            selector().text('网格积分').findOne(3000).click()
+            sleep(1000)
+            selector().text('按日').findOne(3000).click()
+            sleep(2000)
+            selector().text('按月').findOne(3000).parent().next().click()
+            sleep(2000)
+            automator.gesture(2000, [600, 2001], [600, 2200])
+            sleep(2000)
+            selector().text('确定').className('android.widget.Button').findOne(2000).click()
+            sleep(1000)
+            //存量负积分
+            console.log(selector().text('存量负积分').findOne(3000).next().text())
+            console.log(selector().text('存量负积分').findOne(3000).parent().prev().children()[1].text())
+            console.log(selector().text('网格净积分').findOne(3000).next().text())
+            if(selector().text('存量负积分').findOne(3000).next().text()=='--' && selector().text('存量负积分').findOne(3000).parent().prev().children()[1].text()=='--' && selector().text('网格净积分').findOne(3000).next().text()=='--'){
+                xj_str+='网格积分页面数据加载异常，'
+            }else{
+                xj_str+='网格积分页面数据加载正常，'
+            }
+        }catch(e){
+            xj_str+='网格积分页面元素查找异常，'
+        }
+        //渠道积分
+        try{
+            xj_str+='----渠道积分----\n'
+            selector().text('渠道积分').findOne(3000).click()
+            sleep(1000)
+            console.log(selector().text('揽收积分').findOne(3000).next().text())
+            console.log(selector().text('协同积分').findOne(3000).next().text())
+            console.log(selector().text('行为积分').findOne(3000).next().text())
+            if(selector().text('揽收积分').findOne(3000).next().text()=='--' && selector().text('协同积分').findOne(3000).next().text()=='--' && selector().text('行为积分').findOne(3000).next().text()=='--'){
+                xj_str+='渠道积分页面数据加载异常，'
+            }else{
+                xj_str+='渠道积分页面数据加载正常，'
+            }
+        }catch(e){
+                xj_str+='渠道积分页面元素查找异常，'
+        }
+        //服务质量
+        try{
+            xj_str+='----服务质量----\n'
+            selector().text('服务质量').findOne(3000).click()
+            sleep(1000)
+            var str_1 = selector().text('装维评测').findOne(3000).next().text()
+            console.log(str_1)
+            var rex_1 = str_1.match(/\d+\.\d+/)
+            var str_2 = selector().text('本月服务模拟得分').findOne(3000).next().text()
+            console.log(str_2)
+            var rex_2 = str_2.match(/\d+/g)
+            if(rex_1!=null && rex_2!=null){
+                xj_str+='服务质量页面数据加载正常,'
+            }else{
+                xj_str+='服务质量页面数据加载异常,'
+            }
+        }catch(e){
+            xj_str+='服务质量页面元素查找异常，'
+        }
+    }catch(e){
+        console.log('业绩页面元素异常，可能是页面发生了变动或者升级.')
+        xj_str+='业绩页面元素异常，可能是页面发生了变动或者升级.'
+    }
+    finally{
+        return xj_str+'业绩巡检完成'
     }
 }
 //巡检
-function inspection(){
+function inspection(param_str1){
     var xj_str = ''
-    //有效宽带房间渗透率(收集)的值
-    try{   
-        var yxkd_percentage = selector().text('有效宽带房间渗透率(收集)').findOne(5000).next().text();  
-        console.log(yxkd_percentage)
-        var yxkd_number = selector().text('有效宽带数').findOne(5000).next().text();
-        console.log(yxkd_number)
-        var room_number = selector().text('房间收集数').findOne(5000).next().text();
-        console.log(room_number)
-        if(yxkd_percentage=='--' && yxkd_number=='--' && room_number=='--'){
-            console.log('重点关注(考核口径)块的数值异常')
-            xj_str +='重点关注(考核口径)块的数值异常，'
-        }else{
-            console.log('重点关注(考核口径)块巡检完毕，数值正常')
-            xj_str += '重点关注(考核口径)块巡检完毕，数值正常，'
-        }
-    }catch(e){
-        console.log('未找到重点关注(考核口径)的值,可能是页面发生了变更或者未加载出来')
-        xj_str += '未找到重点关注(考核口径)的值,可能是页面发生了变更或者未加载出来，'
-    }
-    //渠道积分
+    /*********************************************规模*********************************************/
     try{
-        automator.clickCenter(selector().text('欠费追收').findOne(2000))
-        console.log(selector().text('欠费追收').find().length)
-        var ls_count = selector().text('揽收积分').depth(7).find()[1].next().next().text(); //揽收积分
-        console.log(ls_count)
-        var xt_count = selector().text('协同积分').depth(7).find()[1].next().next().text();//协同积分
-        console.log(xt_count)
-        var xw_count = selector().text('行为积分').depth(7).find()[1].next().next().text();//行为积分
-        console.log(xw_count)
-        var wy_count = selector().text('维挽积分').depth(7).find()[1].next().next().text();
-        console.log(wy_count)
-        if(ls_count=='--' && xt_count=='--' && xw_count=='--' && wy_count=='--'){
-            console.log('渠道积分块的数值异常')
-            xj_str +='渠道积分块的数值异常，'
-        }else{
-            console.log('渠道积分块的数值正常')
-            xj_str +='渠道积分块的数值正常，'
-        }
-    }catch(e){
-        console.log('未找到渠道积分的值,可能是页面发生了变更或者未加载出来')
-        xj_str += '未找到渠道积分的值,可能是页面发生了变更或者未加载出来，'            
-    }
-    try{
-        //欠费追收
-        for(var i=0;i<15;i++){
-             automator.swipeDown()
-             sleep(200)
-        }
-        var qf_select = selector().text('欠费追收').findOne(5000);
-        automator.clickCenter(qf_select);
-        var target_number = selector().textContains('目标量').depth(16).find()
-        console.log(target_number.length)
-        var limit_index = 0
-        target_number.forEach(function(fun){
-            console.log(fun.text())
-            if(extractNumbers(fun.text())[0]==0){
-                limit_index+=1
+        console.log('---开始'+param_str1+'   规模页面巡检---')
+        selector().text('规模').findOne(3000).click()
+        sleep(1000)
+        var list_arry = []
+        //净增
+        var insert_jz = selector().textContains('当年累计（').find()[0].next().children()[1]
+        list_arry.push(insert_jz)
+        console.log(insert_jz.text())
+        //新增
+        var insert_xz = selector().textContains('当年累计（').find()[0].next().next().children()[1]
+        list_arry.push(insert_xz)
+        console.log(insert_xz.text())
+        //移入
+        var mover_yr = selector().textContains('当年累计（').find()[0].next().next().next().children()[1]
+        list_arry.push(mover_yc)
+        console.log(mover_yr.text())
+        //移出
+        var mover_yc = selector().textContains('当年累计（').find()[0].next().next().next().next().children()[1]
+        list_arry.push(mover_yc)
+        console.log(mover_yc.text())
+        //流失
+        var loss_ls = selector().textContains('当年累计（').find()[0].next().next().next().next().next().children()[1]
+        list_arry.push(loss_ls) 
+        console.log(loss_ls.text())
+        var index_number = 0
+        for(var i=0;i<list_arry.length;i++){
+            if(list_arry[i]=='--' || list_arry[i]=='0'){
+                index_number+=1
             }
-        })
-        if(limit_index>=3){
-            console.log('场景执行情况块的数值异常')
-            xj_str += '场景执行情况块的数值异常'
+        }
+        if(index_number>=3){
+            console.log(param_str1 + '规模页面数据有问题')
+            xj_str+=(param_str1 + '规模页面数据有问题,')
         }else{
-            console.log('场景执行情况块的数值正常')
-            xj_str += '场景执行情况块的数值正常，'                
+            console.log(param_str1 +'规模页面数据正常')
+            xj_str+=(param_str1 +'规模页面数据异常,')
         }
     }catch(e){
-        console.log('场景执行情况块的数值异常')
-        xj_str += '场景执行情况块,可能是页面发生了变更或者未加载出来，'
+        console.log(param_str1 +'规模页面查找元素异常')
+        xj_str += param_str1 +'规模页面查找元素异常,'
+    }
+    sleep(1000)
+    /***************************************结构********************************************* */
+    try{
+        console.log('---开始'+param_str1+'   结构页面巡检---') 
+        selector().text('结构').findOne(2000).click();
+        if(selector().text('套餐结构').findOne(8000)){
+            console.log(param_str1+'结构页面加载完成')
+            xj_str+=(param_str1+'结构页面加载完成,')
+            var number_list = []
+            //到达
+            var str_daoda = selector().text('融合').findOne(5000).next().text();
+            number_list.push(str_daoda)
+            console.log(str_daoda)
+            //占比
+            var str_zhanbi = selector().text('融合').findOne(5000).next().next().text();
+            number_list.push(str_zhanbi)
+            console.log(str_zhanbi)
+            //搭卡率
+            var str_dakalv = selector().text('融合').findOne(5000).next().next().next().text();
+            number_list.push(str_dakalv)
+            console.log(str_dakalv)
+            //有约率
+            var str_youyuelv =selector().text('融合').findOne(5000).next().next().next().next().text();
+            number_list.push(str_youyuelv)
+            console.log(str_youyuelv)
+            var index_number = 0
+            for(var j=0;j<number_list.length;j++){
+                if(number_list[j]=='--' || number_list[j]=='0'){
+                    index_number +=1
+                }
+            }
+            if(index_number>=3){
+                console.log(param_str1 + '结构页面数据异常')
+                xj_str+=(param_str1 + '结构页面数据异常,')
+            }else{
+                console.log(param_str1 +'结构页面数据正常')
+                xj_str+=(param_str1 +'结构页面数据正常,')
+            }
+        }else{
+            console.log(param_str1+'结构页面加载异常')
+            xj_str+=(param_str1+'结构页面加载异常,')
+        }
+    }catch(e){
+        console.log(param_str1 +'结构页面查找元素异常')
+        xj_str += param_str1 +'结构页面查找元素异常,,'        
+    }
+    sleep(1000)
+    /*******************************************流失***************************************** */
+    try{
+        console.log('---开始'+param_str1+'   流失页面巡检---')
+        selector().text('流失').findOne(2000).click();
+        sleep(4000)
+        //流失量
+        str_liushil = selector().text('流失量').findOne(3000).next().text();
+        console.log(str_liushil)
+        //流失价值
+        str_liushi_v = selector().text('流失价值').findOne(3000).next().text()
+        console.log(str_liushi_v)
+        if(extractNumbers(str_liushil)==null && extractNumbers(str_liushi_v)==null){
+            xj_str += param_str1 +'流失页面数据异常，未加载出来,' 
+        }else{
+            xj_str += param_str1 +'流失页面数据正常,'             
+        }
+    }catch(e){
+        console.log(param_str1 +'流失页面查找元素异常')
+        xj_str += param_str1 +'流失页面查找元素异常,' 
+    }
+    sleep(1000)
+    /*****************************************场景******************************************* */
+    //有场景按钮的才巡检
+    if(param_str1.indexOf('网格视图')!=-1){
+        try{
+            console.log('---开始'+param_str1+'   场景页面巡检---')
+            selector().text('场景').findOne(2000).click();
+            sleep(2000)
+            xj_str += param_str1 +'场景页面数据正常' 
+        }catch(e){
+            console.log(param_str1 +'场景页面查找元素异常')
+            xj_str += param_str1 +'场景页面查找元素异常,' 
+        }
     }
     return xj_str
 }
@@ -969,10 +521,11 @@ function extractNumbers(str) {
 }
 //返回主页面
 function back_index(){
-    for(var i=0;i<2;i++){
+    for(var i=0;i<4;i++){
         try{
-            if(selector().text('首页').findOne(3000)){
+            if(selector().text('工单').findOne(3000)){
                 console.log('回到了首页');
+                selector().text('工单').findOne(3000).click()
                 break
             }else{
                 automator.back();
@@ -1073,41 +626,73 @@ function readConfig(configPath){
         }
         let excelObj = excel.open(configPath, '数据源')
         let excelRow = excel.getRowCount(excelObj);
-        resDict = {}
+        var resDict = {}
         for(var i=1;i<excelRow;i++){
             let excelRowData = excel.getRow(excelObj, i);
             resDict[excelRowData[0]] = excelRowData[1]
         }
         excel.close(excelObj)
+        console.log(resDict)
         return resDict
     }catch(e){
         excel.close(excelObj)
         return '读取配置表错误，请检查:\n'+e
     }
-} 
+}
+//读取对照表
+function readExcel(fileDataPath,sheetName){
+    try{
+        let excelObj = excel.open(fileDataPath,sheetName)
+        let excelRow = excel.getRowCount(excelObj);
+        dataDict = {}
+        for(var i=1;i<excelRow;i++){
+            let excelRowData = excel.getRow(excelObj, i);
+            dataDict[String(excelRowData[0])] = String(excelRowData[1])
+        }
+        excel.close(excelObj)
+        return dataDict
+    }catch(e){
+        excel.close(excelObj)
+        return '读取对比表错误，请检查:\n'+e
+    }
+}
 //配置初始化
 function init(){
     if(String(readConfig(configPath)).indexOf('错误')==-1){
         configDict = readConfig(configPath)
         console.warn('----配置表读取成功----')
         console.log(configDict)
-        // if('对照表名称' in configDict){
-        //     console.log('----需要读取对照表----')
-        //     if(String(readExcel(fileDownloadPath +'/'+ configDict['对照表名称'],configDict['sheet页名称'])).indexOf('错误')==-1){
-        //         dataDict = readExcel(fileDownloadPath +'/'+ configDict['对照表名称'],configDict['sheet页名称'])
-        //         console.warn('----对照表读取成功----')
-        //         console.log(dataDict)
-        //     }
-        // }else{
-        //     console.error(readExcel(fileDownloadPath +'/'+ configDict['对照表名称'],configDict['sheet页名称']))
-        //     return false
-        // }
     }else{
         console.error(readConfig(configPath))
         return false
     }
     console.log('----配置读取完成----')
     return true  
+}
+//退出帐户
+function exitApp(){
+    var xj_str = ''
+    selector().text('我的工单').findOne(3000).prev().click()
+    console.log('----开始退出账号----')
+    sleep(3000)
+    try{
+        selector().text('我的').findOne(3000).click()
+        selector().text('设置').waitFor(10000)
+        sleep(2000)
+        selector().text('设置').findOne(3000).click()
+        sleep(1000)
+        selector().text('退出登录').findOne(3000).click()
+        sleep(2000)
+        if(selector().textContains('确定注销当前登录信息').findOne(3000)){
+            selector().text('确定').findOne(3000).click()
+            
+            xj_str+='账号退出成功'
+        }
+    }catch(e){
+        console.log('在工作助手首页查找元素异常，退出账号失败')
+        xj_str+='在工作助手首页查找元素异常，退出账号失败'
+    }
+    return xj_str
 }
 //启动app
 function runApp() {
@@ -1136,46 +721,6 @@ function runApp() {
         return false
     }
 }
-//退出帐户
-function exitApp(){
-    var xj_str = ''
-    for(var i=0;i<5;i++){
-        try{
-            if(selector().text('首页').findOne(2000)){
-                console.log('回到了首页');
-                break
-            }else{
-                automator.back();
-                sleep(1000);
-            }
-        }catch (e){
-            continue
-        }
-    }
-    selector().text('首页').findOne(3000).click()
-    sleep(2000)
-    selector().className('android.widget.Button').findOne(3000).click()
-    console.log('----开始退出账号----')
-    sleep(3000)
-    try{
-        selector().text('我的').findOne(3000).click()
-        selector().text('设置').waitFor(10000)
-        sleep(2000)
-        selector().text('设置').findOne(3000).click()
-        sleep(1000)
-        selector().text('退出登录').findOne(3000).click()
-        sleep(2000)
-        if(selector().textContains('确定注销当前登录信息').findOne(3000)){
-            selector().text('确定').findOne(3000).click()
-            
-            xj_str+='账号退出成功'
-        }
-    }catch(e){
-        console.log('在工作助手首页查找元素异常，退出账号失败')
-        xj_str+='在工作助手首页查找元素异常，退出账号失败'
-    }
-    return xj_str
-}
 //构建主函数
 function main(){
     // 确保APP版本号，否之停止执行并提示，三个参数：name、version、msg
@@ -1190,34 +735,29 @@ function main(){
         var email = configDict['email']
         var passw = configDict['邮件密码']
         var fromPseron = configDict['发件人']
-        var phone = configDict['登录账号']
-        runApp()
-        if(loginApp(String(configDict['登录账号']),String(configDict['验证码']))){
-            console.log('登录成功')
-        }else{
-            console.log('登录失败')
-            app_str +='登录失败'
-            is_not_continue = false
-        }
         if(is_not_continue){
-            if(openH5()){
-                console.log('营销沙盘H5打开成功')
+            console.log('开始登录')
+            if(loginApp(String(configDict['登录账号']),String(configDict['验证码']))){
+                console.log('登录成功')
             }else{
-                console.log('营销沙盘H5打开失败，未找到该选项')
-                app_str +='营销沙盘H5打开失败，未找到该选项'
+                console.log('登录失败')
+                app_str +='登录失败'
                 is_not_continue = false
             }
         }
         if(is_not_continue){
-            var str_text =  branch_office()+'\n'+
-                        branch_post_office()+'\n'+
-                        grid_view()        +'\n'+
-                        xq_marketing()       +'\n'+
-                        screen_view(phone) +'\n'+
-                        task_view()    +'\n'+
-                        task_other()  +'\n'+
-                        area_view()+'\n'+
-                        // mobile_kanban() +'\n'+
+            if(openH5()){
+                console.log('营销沙盘打开成功')
+            }else{
+                console.log('营销沙盘打开失败，未找到该选项')
+                app_str +='营销沙盘打开失败，未找到该选项'
+                is_not_continue = false
+            }
+        }
+        if(is_not_continue){
+            var str_text =  order_view()+'\n'+
+                        territory_view()+'\n'+
+                        performance_view()+'\n'+
                         exitApp()+'\n'+
                         '----------------------------------------------------'
             to_email(host,port,email,title,str_text,fromPseron,passw);            
@@ -1229,12 +769,3 @@ function main(){
     automator.home();
 }
 main();
-// back_index()
-// resetDevice()
-// grid_view()
-// xq_marketing()
-// area_view()      
-// xq_marketing()
-// mobile_kanban()
-// init()
-// runApp()
