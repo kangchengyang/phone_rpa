@@ -328,7 +328,15 @@ function area_view(){
             var insp_str = inspection()
             xj_str +=insp_str
             console.log('====片区视图巡检完成====')
+            for(var i=0;i<20;i++){
+                automator.swipeUp()
+                sleep(200)
+            }
+            automator.back()             
             back_index()
+            sleep(2000)
+            selector().text('首页').findOne(3000).click()
+            sleep(1000)
             return xj_str+='片区视图巡检完成。'
         }
     }catch(e){
@@ -381,6 +389,7 @@ function grid_view(){
                 }
             }
             sleep(4000)
+            selector().text('加载中...').waitFor(4000)
             for(var i=0;i<10;i++){
                 var is_wait = selector().text('加载中...').waitFor(3000)
                 if(!is_wait){
@@ -427,7 +436,15 @@ function grid_view(){
             var insp_str = inspection()
             xj_str +=insp_str
             console.log('====网格视图巡检完成====')
+            for(var i=0;i<20;i++){
+                automator.swipeUp()
+                sleep(200)
+            }
+            automator.back()          
             back_index()
+            sleep(2000)
+            selector().text('首页').findOne(3000).click()
+             sleep(1000)
             return xj_str+='网格视图巡检完成'
         }else{
             console.log('网格视图页面数据加载异常')
@@ -448,7 +465,7 @@ function xq_marketing(){
     console.log('=====开始小区营销视图巡检====')
     try{
         sleep(2000)
-        selector().text('小区营销').findOne(5000).click();
+        selector().id('m-tabs-1-2').findOne(5000).click();
         sleep(2000)
         for(var i=0;i<10;i++){
             var is_wait = selector().text('加载中...').waitFor(3000)
@@ -1139,19 +1156,8 @@ function runApp() {
 //退出帐户
 function exitApp(){
     var xj_str = ''
-    for(var i=0;i<5;i++){
-        try{
-            if(selector().text('工作台').findOne(2000)){
-                console.log('回到了工作助手首页');
-                break
-            }else{
-                automator.back();
-                sleep(1000);
-            }
-        }catch (e){
-            continue
-        }
-    }
+    back_index()
+    selector().className('android.widget.Button').click()
     console.log('----开始退出账号----')
     sleep(3000)
     try{
@@ -1209,11 +1215,11 @@ function main(){
             var str_text =  branch_office()+'\n'+
                         branch_post_office()+'\n'+
                         grid_view()        +'\n'+
+                        area_view()+'\n'+
                         xq_marketing()       +'\n'+
                         screen_view(phone) +'\n'+
                         task_view()    +'\n'+
                         task_other()  +'\n'+
-                        area_view()+'\n'+
                         // mobile_kanban() +'\n'+
                         exitApp()+'\n'+
                         '----------------------------------------------------'
