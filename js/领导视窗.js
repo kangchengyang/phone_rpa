@@ -112,6 +112,7 @@ function openH5(){
 function user_development(){
     console.log('====开始用户发展巡检====')
     var xj_str = ''
+    // var res = ''
     var is_not_continue = true
     try{    
         selector().text('用户发展').findOne(3000).parent().click();
@@ -140,6 +141,8 @@ function user_development(){
         if(is_not_continue){
             //移动
             xj_str+='---开始用户发展-移动-日-数据查看页巡检---\n'
+            //需要加入汇总
+
             selector().text('移动').findOne(3000).next().click()
             sleep(2000)
             selector().text('移动').findOne(3000).next().click()
@@ -148,6 +151,9 @@ function user_development(){
             //用户发展-移动-日-----------------------------------------------------------------------------------------
             if(selector().id('data_echarts').findOne(3000)){
                 console.log('移动-日，数据页面加载完成')
+                var time = selector().id('day_id').findOne(3000).text()
+                console.log(time)
+                xj_str+=time+':\n'
                 xj_str+='用户发展-移动-日-数据查看页面加载完成\n'
                 var area_list = selector().className('android.widget.GridView').findOne(3000).children()[0].children()
                 var term_list = []
@@ -156,6 +162,10 @@ function user_development(){
                 }
                 console.log(term_list)
                 var temp_list = selector().className('android.widget.GridView').findOne(3000).next().children()
+                var exception = 0
+                var config = 0
+                var normal = 0
+                var user_dve_str = ''
                 for(var temp=0;temp<temp_list.length;temp++){
                     var value_list = []
                     var values = temp_list[temp].children()
@@ -165,11 +175,26 @@ function user_development(){
                     value_list.push(values[3].text())
                     value_list.push(values[4].text())
                     // console.log(value_list)
-                    xj_str+=data_com('用户发展-移动-日',term_list,value_list,dataDict,area)
+                    var data_com_list = data_com('用户发展-移动-日',term_list,value_list,dataDict,area)
+                    if(data_com_list[0]){
+                        //未配置的情况
+                         config+=1
+                    }else if(data_com_list[1]){
+                        //数据异常的情况
+                        exception+=1
+                    }else{
+                        //正常的情况
+                        normal+=1
+                    }
+                    user_dve_str+=data_com_list[2]
                 }
+                xj_str+='正常'+String(normal)+'项，异常'+String(exception)+'项，未配置'+String(config)+'项，异常内容：\n'
+                xj_str+=user_dve_str
+                xj_str+='------------------\n'
                 // console.log(xj_str)
             }else{
                 xj_str+='用户发展-移动-日，数据查看页面加载异常\n'
+                xj_str+='------------------\n'
             }
 
             //用户发展-移动-月-----------------------------------------------------------------------------------------
@@ -186,6 +211,10 @@ function user_development(){
                 }
                 console.log(term_list)
                 var temp_list = selector().className('android.widget.GridView').findOne(3000).next().children()
+                var exception = 0
+                var config = 0
+                var normal = 0
+                var user_dve_str = ''                
                 for(var temp=0;temp<temp_list.length;temp++){
                     var value_list = []
                     var values = temp_list[temp].children()
@@ -195,11 +224,26 @@ function user_development(){
                     value_list.push(values[3].text())
                     value_list.push(values[4].text())
                     // console.log(value_list)
-                    xj_str+=data_com('用户发展-移动-月',term_list,value_list,dataDict,area)
+                    var data_com_list = data_com('用户发展-移动-月',term_list,value_list,dataDict,area)
+                    if(data_com_list[0]){
+                        //未配置的情况
+                         config+=1
+                    }else if(data_com_list[1]){
+                        //数据异常的情况
+                        exception+=1
+                    }else{
+                        //正常的情况
+                        normal+=1
+                    }
+                    user_dve_str+=data_com_list[2]
                 }
+                xj_str+='正常'+String(normal)+'项，异常'+String(exception)+'项，未配置'+String(config)+'项，异常内容：\n'
+                xj_str+=user_dve_str
+                xj_str+='------------------\n'
                 // console.log(xj_str)
             }else{
                 xj_str+='用户发展-移动-月，数据查看页面加载异常\n'
+                xj_str+='------------------\n'
             }    
             automator.back()//返回上一页
             sleep(1000)
@@ -212,6 +256,9 @@ function user_development(){
             selector().id('data_echarts').waitFor(10000)
             sleep(2000)
             if(selector().id('data_echarts').findOne(3000)){
+                var time = selector().id('day_id').findOne(3000).text()
+                console.log(time)
+                xj_str+=time+':\n'                
                 console.log('宽带数据界面加载完成')
                 xj_str+='宽带-日，数据界面加载完成\n'
                 var area_list = selector().className('android.widget.GridView').findOne(3000).children()[0].children()
@@ -220,17 +267,36 @@ function user_development(){
                     term_list.push(area_list[term].text())
                 }
                 var temp_list = selector().className('android.widget.GridView').findOne(3000).next().children()
+                var exception = 0
+                var config = 0
+                var normal = 0
+                var user_dve_str = ''
                 for(var temp=0;temp<temp_list.length;temp++){
                     var value_list = []
                     var values = temp_list[temp].children()
                     var area = values[0].text()
                     value_list.push(values[1].text())
                     value_list.push(values[2].text())
-                    xj_str+=data_com('用户发展-宽带-日',term_list,value_list,dataDict,area)
+                    var data_com_list = data_com('用户发展-宽带-日',term_list,value_list,dataDict,area)
+                    if(data_com_list[0]){
+                        //未配置的情况
+                         config+=1
+                    }else if(data_com_list[1]){
+                        //数据异常的情况
+                        exception+=1
+                    }else{
+                        //正常的情况
+                        normal+=1
+                    }
+                    user_dve_str+=data_com_list[2]
                 }
+                xj_str+='正常'+String(normal)+'项，异常'+String(exception)+'项，未配置'+String(config)+'项，异常内容：\n'
+                xj_str+=user_dve_str
+                xj_str+='------------------\n'
                 // console.log(xj_str)
             }else{
                  xj_str+='用户发展-宽带-日，宽带总量数据查看页面加载异常\n'
+                 xj_str+='------------------\n'
             }
             //用户发展-宽带-月-------------------------------------------------------------------------------------------
             selector().text('月发展').findOne(3000).click()
@@ -245,17 +311,36 @@ function user_development(){
                     term_list.push(area_list[term].text())
                 }
                 var temp_list = selector().className('android.widget.GridView').findOne(3000).next().children()
+                var exception = 0
+                var config = 0
+                var normal = 0
+                var user_dve_str = ''
                 for(var temp=0;temp<temp_list.length;temp++){
                     var value_list = []
                     var values = temp_list[temp].children()
                     var area = values[0].text()
                     value_list.push(values[1].text())
                     value_list.push(values[2].text())
-                    xj_str+=data_com('用户发展-宽带-月',term_list,value_list,dataDict,area)
+                    var data_com_list = data_com('用户发展-宽带-月',term_list,value_list,dataDict,area)
+                    if(data_com_list[0]){
+                        //未配置的情况
+                         config+=1
+                    }else if(data_com_list[1]){
+                        //数据异常的情况
+                        exception+=1
+                    }else{
+                        //正常的情况
+                        normal+=1
+                    }
+                    user_dve_str+=data_com_list[2]
                 }
+                xj_str+='正常'+String(normal)+'项，异常'+String(exception)+'项，未配置'+String(config)+'项，异常内容：\n'
+                xj_str+=user_dve_str
+                xj_str+='------------------\n'
                 // console.log(xj_str)
             }else{
                  xj_str+='用户发展-宽带-月，宽带总量数据查看页面加载异常\n'
+                 xj_str+='------------------\n'
             }        
             automator.back()//返回上一页
             sleep(1000)
@@ -268,6 +353,9 @@ function user_development(){
             selector().id('data_echarts').waitFor(10000)
             sleep(2000)
             if(selector().id('data_echarts').findOne(3000)){
+                var time = selector().id('day_id').findOne(3000).text()
+                console.log(time)
+                xj_str+=time+':\n'                
                 console.log('电信电视界面加载完成')
                 xj_str+='电信电视-日，界面加载完成\n'
                 var area_list = selector().className('android.widget.GridView').findOne(3000).children()[0].children()
@@ -276,16 +364,35 @@ function user_development(){
                     term_list.push(area_list[term].text())
                 }
                 var temp_list = selector().className('android.widget.GridView').findOne(3000).next().children()
+                var exception = 0
+                var config = 0
+                var normal = 0
+                var user_dve_str = ''
                 for(var temp=0;temp<temp_list.length;temp++){
                     var value_list = []
                     var values = temp_list[temp].children()
                     var area = values[0].text()
                     value_list.push(values[1].text())
                     value_list.push(values[2].text())
-                    xj_str+=data_com('用户发展-电信电视-日',term_list,value_list,dataDict,area)
+                    var data_com_list = data_com('用户发展-电信电视-日',term_list,value_list,dataDict,area)
+                    if(data_com_list[0]){
+                        //未配置的情况
+                         config+=1
+                    }else if(data_com_list[1]){
+                        //数据异常的情况
+                        exception+=1
+                    }else{
+                        //正常的情况
+                        normal+=1
+                    }
+                    user_dve_str+=data_com_list[2]
                 }
+                xj_str+='正常'+String(normal)+'项，异常'+String(exception)+'项，未配置'+String(config)+'项，异常内容：\n'
+                xj_str+=user_dve_str
+                xj_str+='------------------\n'
             }else{
                  xj_str+='用户发展-电信电视-日，数据查看页面加载异常\n'
+                 xj_str+='------------------\n'
             }
 
 
@@ -302,16 +409,35 @@ function user_development(){
                     term_list.push(area_list[term].text())
                 }
                 var temp_list = selector().className('android.widget.GridView').findOne(3000).next().children()
+                var exception = 0
+                var config = 0
+                var normal = 0
+                var user_dve_str = ''
                 for(var temp=0;temp<temp_list.length;temp++){
                     var value_list = []
                     var values = temp_list[temp].children()
                     var area = values[0].text()
                     value_list.push(values[1].text())
                     value_list.push(values[2].text())
-                    xj_str+=data_com('用户发展-电信电视-日',term_list,value_list,dataDict,area)
+                    var data_com_list = data_com('用户发展-电信电视-日',term_list,value_list,dataDict,area)
+                    if(data_com_list[0]){
+                        //未配置的情况
+                         config+=1
+                    }else if(data_com_list[1]){
+                        //数据异常的情况
+                        exception+=1
+                    }else{
+                        //正常的情况
+                        normal+=1
+                    }
+                    user_dve_str+=data_com_list[2]
                 }
+                xj_str+='正常'+String(normal)+'项，异常'+String(exception)+'项，未配置'+String(config)+'项，异常内容：\n'
+                xj_str+=user_dve_str
+                xj_str+='------------------\n'
             }else{
                  xj_str+='用户发展-电信电视-日，数据查看页面加载异常\n'
+                 xj_str+='------------------\n'
             }
             back_index()//返回首页
             return xj_str+='====用户发展选项卡巡检完成===='
@@ -338,6 +464,8 @@ function data_com(from_str,term_list,value_list,dict_data,area){
      * area: 地区
      */
     var str_1 = ''
+    var exception = false
+    var configured = false
     dict = dict_data[from_str]
     for(var i=0;i<term_list.length;i++){
         try{
@@ -348,10 +476,12 @@ function data_com(from_str,term_list,value_list,dict_data,area){
                     console.log('开始比较')
                     console.log(from_str+'--'+area+':'+term_list[i]+' '+value_list[i]+'--在'+'对照表---'+term_list[i]+'区间 '+dict[area][term_list[i]]+'内，数据正常')
                 }else{
+                    exception = true
                     console.log(from_str+'--'+area+':'+term_list[i]+' '+value_list[i]+'--不在'+'对照表---'+term_list[i]+'区间  '+dict[area][term_list[i]]+'内，数据异常\n')
                     str_1+=from_str+'--'+area+':'+term_list[i]+' '+value_list[i]+'--不在'+'对照表---'+term_list[i]+'区间  '+dict[area][term_list[i]]+'内，数据异常\n'
                 }
             }else{
+                configured = true
                 console.log(from_str+'地区: '+area+' 在配置表未配置\n')
                 str_1+= (from_str+'地区: '+area+' 在配置表未配置\n')
                 break
@@ -363,7 +493,7 @@ function data_com(from_str,term_list,value_list,dict_data,area){
             str_1+= area+':'+term_list[i]+' '+value_list[i]+'发生异常\n'
         }
     }
-    return str_1                     
+    return [configured,exception,str_1]                   
 }
 
 //过网分析
@@ -375,6 +505,9 @@ function network_analysis(){
         selector().idContains('chart').waitFor(10000)
         //过网分析-日新增----------------------------------------------------------------------------------------
         if(selector().idContains('chart').findOne(3000)){
+            var time = selector().id('opTime').findOne(3000).text()
+            console.log(time)
+            xj_str+=time+':\n'            
             console.log('过网分析-日新增，数据页面加载完成')
             xj_str+='过网分析-日新增，数据查看页面加载完成\n'
             var area_list = selector().className('android.widget.GridView').findOne(3000).children()[0].children()
@@ -384,6 +517,10 @@ function network_analysis(){
             }
             console.log(term_list)
             var temp_list = selector().className('android.widget.GridView').findOne(3000).next().children()
+            var exception = 0
+            var config = 0
+            var normal = 0
+            var user_dve_str = ''
             for(var temp=0;temp<temp_list.length;temp++){
                 var value_list = []
                 var values = temp_list[temp].children()
@@ -392,12 +529,27 @@ function network_analysis(){
                 value_list.push(values[2].text().split(' ')[0])
                 value_list.push(values[3].text().split(' ')[0])
                 // console.log(value_list)
-                xj_str+=data_com('过网分析-日新增',term_list,value_list,dataDict,area)
+                var data_com_list = data_com('过网分析-日新增',term_list,value_list,dataDict,area)
+                if(data_com_list[0]){
+                    //未配置的情况
+                        config+=1
+                }else if(data_com_list[1]){
+                    //数据异常的情况
+                    exception+=1
+                }else{
+                    //正常的情况
+                    normal+=1
+                }
+                user_dve_str+=data_com_list[2]
             }
+            xj_str+='正常'+String(normal)+'项，异常'+String(exception)+'项，未配置'+String(config)+'项，异常内容：\n'
+            xj_str+=user_dve_str
+            xj_str+='------------------\n'
             // console.log(xj_str)
         }else{
              console.log('过网分析-日新增，页面加载异常')
-            xj_str +='过网分析-日新增，页面加载异常\n'  
+            xj_str +='过网分析-日新增，页面加载异常\n'
+            xj_str+='------------------\n'  
         }
         //过网分析-日净增----------------------------------------------------------------------------------------
         selector().text('日净增').findOne(3000).click();
@@ -413,6 +565,10 @@ function network_analysis(){
             }
             console.log(term_list)
             var temp_list = selector().className('android.widget.GridView').findOne(3000).next().children()
+            var exception = 0
+            var config = 0
+            var normal = 0
+            var user_dve_str = ''
             for(var temp=0;temp<temp_list.length;temp++){
                 var value_list = []
                 var values = temp_list[temp].children()
@@ -421,18 +577,34 @@ function network_analysis(){
                 value_list.push(values[2].text().split(' ')[0])
                 value_list.push(values[3].text().split(' ')[0])
                 // console.log(value_list)
-                xj_str+=data_com('过网分析-日净增',term_list,value_list,dataDict,area)
+                var data_com_list = data_com('过网分析-日净增',term_list,value_list,dataDict,area)
+                if(data_com_list[0]){
+                    //未配置的情况
+                        config+=1
+                }else if(data_com_list[1]){
+                    //数据异常的情况
+                    exception+=1
+                }else{
+                    //正常的情况
+                    normal+=1
+                }
+                user_dve_str+=data_com_list[2]
             }
+            xj_str+='正常'+String(normal)+'项，异常'+String(exception)+'项，未配置'+String(config)+'项，异常内容：\n'
+            xj_str+=user_dve_str
+            xj_str+='------------------\n'
             // console.log(xj_str)
         }else{
              console.log('过网分析-日净增，页面加载异常')
-            xj_str +='过网分析-日净增，页面加载异常\n'  
+            xj_str +='过网分析-日净增，页面加载异常\n'
+            xj_str+='------------------\n'  
         }
         back_index()
         return xj_str+'====过网分析页面巡检完成====\n'
     }catch(e){
         console.log('过网分析页面查找元素异常\n'+e)
         xj_str +='过网分析页面查找元素异常\n'
+        xj_str+='------------------\n'
         return xj_str
     }
 }
@@ -468,6 +640,9 @@ function kilomega_5G(){
             selector().id('data_echarts').waitFor(10000)
             //千兆及5G-千兆发展及权益-日-------------------------------------------------------------------------
             if(selector().id('data_echarts').findOne(3000)){
+                var time = selector().id('day_id').findOne(3000).text()
+                console.log(time)
+                xj_str+=time+':\n'               
                 console.log('千兆及5G-千兆发展及权益-日，数据页面加载完成')
                 xj_str+='千兆及5G-千兆发展及权益-日，数据查看页面加载完成\n'
                 var area_list = selector().id('column_title').findOne(3000).children()[0].children()
@@ -478,6 +653,10 @@ function kilomega_5G(){
                 console.log(term_list)
                 var temp_list = selector().id('column_title').findOne(3000).next().children()
                 // console.log(temp_list.length)
+                var exception = 0
+                var config = 0
+                var normal = 0
+                var user_dve_str = ''
                 for(var temp=0;temp<temp_list.length;temp++){
                     var value_list = []
                     var values = temp_list[temp].children()
@@ -487,17 +666,35 @@ function kilomega_5G(){
                     value_list.push(values[2].text())
                     value_list.push(values[3].text())
                     // console.log(value_list)
-                    xj_str+=data_com('千兆及5G-千兆发展及权益-日',term_list,value_list,dataDict,area)
+                    var data_com_list = data_com('千兆及5G-千兆发展及权益-日',term_list,value_list,dataDict,area)
+                    if(data_com_list[0]){
+                        //未配置的情况
+                         config+=1
+                    }else if(data_com_list[1]){
+                        //数据异常的情况
+                        exception+=1
+                    }else{
+                        //正常的情况
+                        normal+=1
+                    }
+                    user_dve_str+=data_com_list[2]
                 }
+                xj_str+='正常'+String(normal)+'项，异常'+String(exception)+'项，未配置'+String(config)+'项，异常内容：\n'
+                xj_str+=user_dve_str
+                xj_str+='------------------\n'
                 // console.log(xj_str)
             }else{
                 xj_str+='千兆及5G-千兆发展及权益-日，数据查看页面加载异常\n'
+                xj_str+='------------------\n'
             }
             selector().text('月发展').findOne(3000).click()
             sleep(2000)
             selector().id('data_echarts').waitFor(10000)
             //千兆及5G-千兆发展及权益-月-------------------------------------------------------------------------
             if(selector().id('data_echarts').findOne(3000)){
+                var time = selector().id('day_id').findOne(3000).text()
+                console.log(time)
+                xj_str+=time+':\n'                 
                 console.log('千兆及5G-千兆发展及权益-月，数据页面加载完成')
                 xj_str+='千兆及5G-千兆发展及权益-月，数据查看页面加载完成\n'
                 var area_list = selector().id('column_title').findOne(3000).children()[0].children()
@@ -507,6 +704,10 @@ function kilomega_5G(){
                 }
                 console.log(term_list)
                 var temp_list = selector().id('column_title').findOne(3000).next().children()
+                var exception = 0
+                var config = 0
+                var normal = 0
+                var user_dve_str = ''                
                 for(var temp=0;temp<temp_list.length;temp++){
                     var value_list = []
                     var values = temp_list[temp].children()
@@ -516,11 +717,26 @@ function kilomega_5G(){
                     value_list.push(values[3].text())
                     value_list.push(values[4].text())
                     console.log(value_list)
-                    xj_str+=data_com('千兆及5G-千兆发展及权益-月',term_list,value_list,dataDict,area)
+                    var data_com_list = data_com('千兆及5G-千兆发展及权益-月',term_list,value_list,dataDict,area)
+                    if(data_com_list[0]){
+                        //未配置的情况
+                         config+=1
+                    }else if(data_com_list[1]){
+                        //数据异常的情况
+                        exception+=1
+                    }else{
+                        //正常的情况
+                        normal+=1
+                    }
+                    user_dve_str+=data_com_list[2]
                 }
+                xj_str+='正常'+String(normal)+'项，异常'+String(exception)+'项，未配置'+String(config)+'项，异常内容：\n'
+                xj_str+=user_dve_str
+                xj_str+='------------------\n'
                 // console.log(xj_str)
             }else{
                 xj_str+='千兆及5G-千兆发展及权益-月，数据查看页面加载异常\n'
+                xj_str+='------------------\n'
             }
             automator.back()
             sleep(2000)
@@ -543,6 +759,9 @@ function kilomega_5G(){
             selector().id('data_echarts').waitFor(10000)
             //千兆及5G-500M发展及权益-日-------------------------------------------------------------------------
             if(selector().id('data_echarts').findOne(3000)){
+                var time = selector().id('day_id').findOne(3000).text()
+                console.log(time)
+                xj_str+=time+':\n'                 
                 console.log('千兆及5G-500M发展及权益-日，数据页面加载完成')
                 xj_str+='千兆及5G-500M发展及权益-日，数据查看页面加载完成\n'
                 var area_list = selector().id('column_title').findOne(3000).children()[0].children()
@@ -562,11 +781,26 @@ function kilomega_5G(){
                     value_list.push(values[2].text())
                     value_list.push(values[3].text())
                     console.log(value_list)
-                    // xj_str+=data_com('千兆及5G-500M发展及权益-日',term_list,value_list,dataDict,area)
+                    // var data_com_list = data_com('千兆及5G-500M发展及权益-日',term_list,value_list,dataDict,area)
+                    // if(data_com_list[0]){
+                    //     //未配置的情况
+                    //      config+=1
+                    // }else if(data_com_list[1]){
+                    //     //数据异常的情况
+                    //     exception+=1
+                    // }else{
+                    //     //正常的情况
+                    //     normal+=1
+                    // }
+                    // user_dve_str+=data_com_list[2]
                 }
+                // xj_str+='正常'+String(normal)+'项，异常'+String(exception)+'项，未配置'+String(config)+'项，异常内容：\n'
+                // xj_str+=user_dve_str
+                // xj_str+='------------------\n'
                 // console.log(xj_str)
             }else{
                 xj_str+='千兆及5G-500M发展及权益-日，数据查看页面加载异常\n'
+                xj_str+='------------------\n'
             }
             selector().text('月发展').findOne(3000).click()
             sleep(2000)
@@ -582,6 +816,10 @@ function kilomega_5G(){
                 }
                 console.log(term_list)
                 var temp_list = selector().id('column_title').findOne(3000).next().children()
+                var exception = 0
+                var config = 0
+                var normal = 0
+                var user_dve_str = ''                
                 for(var temp=0;temp<temp_list.length;temp++){
                     var value_list = []
                     var values = temp_list[temp].children()
@@ -591,11 +829,26 @@ function kilomega_5G(){
                     value_list.push(values[3].text())
                     value_list.push(values[4].text())
                     console.log(value_list)
-                    // xj_str+=data_com('千兆及5G-500M发展及权益-月',term_list,value_list,dataDict,area)
+                    // var data_com_list = data_com('千兆及5G-500M发展及权益-月',term_list,value_list,dataDict,area)
+                    // if(data_com_list[0]){
+                    //     //未配置的情况
+                    //      config+=1
+                    // }else if(data_com_list[1]){
+                    //     //数据异常的情况
+                    //     exception+=1
+                    // }else{
+                    //     //正常的情况
+                    //     normal+=1
+                    // }
+                    // user_dve_str+=data_com_list[2]
                 }
+                // xj_str+='正常'+String(normal)+'项，异常'+String(exception)+'项，未配置'+String(config)+'项，异常内容：\n'
+                // xj_str+=user_dve_str
+                // xj_str+='------------------\n'
                 // console.log(xj_str)
             }else{
                 xj_str+='千兆及5G-500M发展及权益-月，数据查看页面加载异常\n'
+                xj_str+='------------------\n'
             }
             automator.back()
             sleep(2000)
@@ -618,6 +871,9 @@ function kilomega_5G(){
             selector().id('data_echarts').waitFor(10000)
             //千兆及5G-239及以上发展-日-------------------------------------------------------------------------
             if(selector().id('data_echarts').findOne(3000)){
+                var time = selector().id('day_id').findOne(3000).text()
+                console.log(time)
+                xj_str+=time+':\n'                 
                 console.log('千兆及5G-239及以上发展-日，数据页面加载完成')
                 xj_str+='千兆及5G-239及以上发展-日，数据查看页面加载完成\n'
                 var area_list = selector().id('column_title').findOne(3000).children()[0].children()
@@ -627,6 +883,10 @@ function kilomega_5G(){
                 }
                 console.log(term_list)
                 var temp_list = selector().id('column_title').findOne(3000).next().children()
+                var exception = 0
+                var config = 0
+                var normal = 0
+                var user_dve_str = ''                
                 // console.log(temp_list.length)
                 for(var temp=0;temp<temp_list.length;temp++){
                     var value_list = []
@@ -638,11 +898,26 @@ function kilomega_5G(){
                     value_list.push(values[3].text())
                     value_list.push(values[4].text())
                     console.log(value_list)
-                    // xj_str+=data_com('千兆及5G-239及以上发展-日',term_list,value_list,dataDict,area)
+                    // var data_com_list = data_com('千兆及5G-239及以上发展-日',term_list,value_list,dataDict,area)
+                    // if(data_com_list[0]){
+                    //     //未配置的情况
+                    //      config+=1
+                    // }else if(data_com_list[1]){
+                    //     //数据异常的情况
+                    //     exception+=1
+                    // }else{
+                    //     //正常的情况
+                    //     normal+=1
+                    // }
+                    // user_dve_str+=data_com_list[2]
                 }
+                // xj_str+='正常'+String(normal)+'项，异常'+String(exception)+'项，未配置'+String(config)+'项，异常内容：\n'
+                // xj_str+=user_dve_str
+                // xj_str+='------------------\n'
                 // console.log(xj_str)
             }else{
                 xj_str+='千兆及5G-239及以上发展-日，数据查看页面加载异常\n'
+                xj_str+='------------------\n'
             }
             selector().text('月发展').findOne(3000).click()
             sleep(2000)
@@ -658,6 +933,10 @@ function kilomega_5G(){
                 }
                 console.log(term_list)
                 var temp_list = selector().id('column_title').findOne(3000).next().children()
+                var exception = 0
+                var config = 0
+                var normal = 0
+                var user_dve_str = ''
                 for(var temp=0;temp<temp_list.length;temp++){
                     var value_list = []
                     var values = temp_list[temp].children()
@@ -667,11 +946,26 @@ function kilomega_5G(){
                     value_list.push(values[3].text())
                     value_list.push(values[4].text())
                     console.log(value_list)
-                    // xj_str+=data_com('千兆及5G-239及以上发展-月',term_list,value_list,dataDict,area)
+                    // var data_com_list = data_com('千兆及5G-239及以上发展-月',term_list,value_list,dataDict,area)
+                    // if(data_com_list[0]){
+                    //     //未配置的情况
+                    //      config+=1
+                    // }else if(data_com_list[1]){
+                    //     //数据异常的情况
+                    //     exception+=1
+                    // }else{
+                    //     //正常的情况
+                    //     normal+=1
+                    // }
+                    // user_dve_str+=data_com_list[2]
                 }
+                // xj_str+='正常'+String(normal)+'项，异常'+String(exception)+'项，未配置'+String(config)+'项，异常内容：\n'
+                // xj_str+=user_dve_str
+                // xj_str+='------------------\n'
                 // console.log(xj_str)
             }else{
                 xj_str+='千兆及5G-239及以上发展-月，数据查看页面加载异常\n'
+                xj_str+='------------------\n'
             }
         }catch(e){
             console.log('千兆及5G-239及以上发展,数据页面查找元素异常\n'+e)
@@ -689,9 +983,6 @@ function kilomega_5G(){
     back_index()
     return xj_str +='====千兆及5G巡检完成===='    
 }
-
-
-
 //数字生活
 function digital_living(){
     var xj_str='====开始数字生活巡检====\n'
@@ -841,7 +1132,10 @@ function first_look(){
     sleep(2000)
     //抢先看-用户发展---------------------------------------------------------
     try{
-        xj_str+='开始抢先看-用户发展，巡检'        
+        xj_str+='开始抢先看-用户发展，巡检'
+        var time = selector().id('cdma_title').findOne(3000).text()
+        console.log(time)
+        xj_str+=time+':\n'                 
         var titles = ['新增','净增','到达']
         list_yidong=[]
         list_kuandai=[]
@@ -866,9 +1160,9 @@ function first_look(){
         console.log(list_kuandai) 
         console.log(list_dianxindianshi)
         //开始比较
-        xj_str+=data_com('抢先看-用户发展',titles,list_yidong,dataDict,'移动')
-        xj_str+=data_com('抢先看-用户发展',titles,list_kuandai,dataDict,'宽带')
-        xj_str+=data_com('抢先看-用户发展',titles,list_dianxindianshi,dataDict,'电信电视')
+        xj_str+=data_com('抢先看-用户发展',titles,list_yidong,dataDict,'移动')[2]
+        xj_str+=data_com('抢先看-用户发展',titles,list_kuandai,dataDict,'宽带')[2]
+        xj_str+=data_com('抢先看-用户发展',titles,list_dianxindianshi,dataDict,'电信电视')[2]
         xj_str+='抢先看-用户发展，巡检完成。'    
     }catch(e){
         console.log('抢先看-用户发展页面查找元素异常\n'+e)
@@ -882,6 +1176,9 @@ function first_look(){
         sleep(2000)
         selector().id('cdma_title').textContains('过网分析').waitFor(10000)
         if(selector().id('cdma_title').textContains('过网分析').findOne(3000)){
+            var time = selector().id('cdma_title').findOne(3000).text()
+            console.log(time)
+            xj_str+=time+':\n'             
             console.log('抢先看-过网分析页面加载完成')
             var titles = ['新增','净增','到达']
             var dianxin_list = []
@@ -905,9 +1202,9 @@ function first_look(){
             console.log(dianxin_list)
             console.log(liantong_list)
             console.log(yiodng_list)
-            xj_str+=data_com('抢先看-过网分析',titles,dianxin_list,dataDict,'电信')
-            xj_str+=data_com('抢先看-过网分析',titles,liantong_list,dataDict,'联通')
-            xj_str+=data_com('抢先看-过网分析',titles,yiodng_list,dataDict,'移动')
+            xj_str+=data_com('抢先看-过网分析',titles,dianxin_list,dataDict,'电信')[2]
+            xj_str+=data_com('抢先看-过网分析',titles,liantong_list,dataDict,'联通')[2]
+            xj_str+=data_com('抢先看-过网分析',titles,yiodng_list,dataDict,'移动')[2]
             xj_str+='抢先看-过网分析，巡检完成。'
             automator.back()//返回上级
         }else{
@@ -945,6 +1242,9 @@ function first_look(){
         selector().id('cdma_title').textContains('5G发展').waitFor(10000)
         sleep(2000)
         if(selector().id('cdma_title').textContains('5G发展').findOne(3000)){
+            var time = selector().id('cdma_title').findOne(3000).text()
+            console.log(time)
+            xj_str+=time+':\n'             
             var list_5G_day = []
             var list_5G_user =[]
             var list_5G_vip= []
@@ -958,27 +1258,27 @@ function first_look(){
             list_5G_day.push(insert_nums[0].next().next().next().next().next().text())
             titles = ['新增量','其中主套餐','其中升级包']
             console.log(list_5G_day)
-            xj_str+=data_com('抢先看-5G',titles,list_5G_day,dataDict,'5G套餐日发展量')
+            xj_str+=data_com('抢先看-5G',titles,list_5G_day,dataDict,'5G套餐日发展量')[2]
             //5G套餐日发展用户量
             list_5G_user.push(insert_nums[1].next().text())
             list_5G_user.push(insert_nums[1].next().next().next().text())
             list_5G_user.push(insert_nums[1].next().next().next().next().next().text())
             titles = ['新增','新用户','老用户']
-            xj_str+=data_com('抢先看-5G',titles,list_5G_user,dataDict,'5G套餐日发展用户量')
+            xj_str+=data_com('抢先看-5G',titles,list_5G_user,dataDict,'5G套餐日发展用户量')[2]
             console.log(list_5G_user)
             //5G会员
             list_5G_vip.push(insert_nums[2].next().text())
             list_5G_vip.push(insert_nums[2].next().next().next().text())
             list_5G_vip.push(insert_nums[2].next().next().next().next().next().text())
             titles = ['5g会员','黄金会员','白金会员']
-            xj_str+=data_com('抢先看-5G',titles,list_5G_vip,dataDict,'5G会员')
+            xj_str+=data_com('抢先看-5G',titles,list_5G_vip,dataDict,'5G会员')[2]
             console.log(list_5G_vip)
             //5G权益和应用
             list_qyadndyy.push(insert_nums[3].next().text())
             list_qyadndyy.push(insert_nums[3].next().next().next().text())
             list_qyadndyy.push(insert_nums[3].next().next().next().next().next().text())
             titles = ['权益','应用权益','生态权益']
-            xj_str+=data_com('抢先看-5G',titles,list_qyadndyy,dataDict,'5G权益和应用')
+            xj_str+=data_com('抢先看-5G',titles,list_qyadndyy,dataDict,'5G权益和应用')[2]
             console.log(list_qyadndyy)
             xj_str+='开始抢先看-5Gu，巡检完成。'
             automator.back()
@@ -1015,6 +1315,9 @@ function first_look(){
         sleep(2000)
         selector().id('jxr_chart').waitFor(10000)
         if(selector().id('jxr_chart').findOne(3000)){
+            var time = selector().id('cdma_title').findOne(3000).text()
+            console.log(time)
+            xj_str+=time+':\n'             
             console.log('抢先看-携号转网,页面加载完成。')
             selector().text('携入').findOne().click()
             var titles = ['携入','携出','净携入']
@@ -1024,15 +1327,15 @@ function first_look(){
             //重庆电信
             var chongqingdianxin = [xierus[0].next().text(),xiechus[0].next().text(),jingxieru[0].next().text()]
             console.log(chongqingdianxin)
-            xj_str+=data_com('抢先看-携号转网',titles,chongqingdianxin,dataDict,'重庆电信')
+            xj_str+=data_com('抢先看-携号转网',titles,chongqingdianxin,dataDict,'重庆电信')[2]
             //重庆移动
             var chongqingyidong = [xierus[1].next().text(),xiechus[1].next().text(),jingxieru[1].next().text()]
             console.log(chongqingyidong)
-            xj_str+=data_com('抢先看-携号转网',titles,chongqingyidong,dataDict,'重庆移动')
+            xj_str+=data_com('抢先看-携号转网',titles,chongqingyidong,dataDict,'重庆移动')[2]
             //重庆联通
             var chongqingliantong = [xierus[2].next().text(),xiechus[2].next().text(),jingxieru[2].next().text()]
             console.log(chongqingliantong)
-            xj_str+=data_com('抢先看-携号转网',titles,chongqingliantong,dataDict,'重庆联通')
+            xj_str+=data_com('抢先看-携号转网',titles,chongqingliantong,dataDict,'重庆联通')[2]
             xj_str+='抢先看-携号转网，巡检完成'
         }else{
             console.log('抢先看-携号转网,页面加载异常\n')
@@ -1187,7 +1490,6 @@ function xz_service(){
     }
 
 }
-
 //渠道积分
 function qudao_integral(){
     console.log('====开始渠道积分选项卡巡检====')
@@ -1227,7 +1529,6 @@ function qudao_integral(){
         return xj_str
     }    
 }
-
 //提取数字
 function extractNumbers(str) {  
     try{
@@ -1519,17 +1820,27 @@ function main(){
         }
         if(is_not_continue){
             var str_text =  user_development()+'\n'+
+                        '----------------------------------------------\n'+
                         kilomega_5G()+'\n'+
+                        '----------------------------------------------\n'+
                         digital_living()+'\n'+
+                        '----------------------------------------------\n'+
                         reven_Progress()        +'\n'+
+                        '----------------------------------------------\n'+
                         first_look()       +'\n'+
+                        '----------------------------------------------\n'+
                         realtime_reading() +'\n'+
+                        '----------------------------------------------\n'+
                         branch_realtime_reading()    +'\n'+
+                        '----------------------------------------------\n'+
                         xz_service()  +'\n'+
+                        '----------------------------------------------\n'+
                         network_analysis() +'\n'+
+                        '----------------------------------------------\n'+
                         qudao_integral()+'\n'+
+                        '----------------------------------------------\n'+
                         exitApp()+'\n'+
-                        '----------------------------------------------------'
+                        '-----------------------------------------------'
             to_email(host,port,email,title,str_text,fromPseron,passw);            
         }else{
             to_email(host,port,email,title,app_str,fromPseron,passw);
