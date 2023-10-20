@@ -1619,6 +1619,30 @@ function to_email(host,port,email,param_str1,param_str2,fromPerson,passw){
         console.log('邮件发送失败')
     }
 }
+//钉钉接口发送信息
+function to_dingdingtalk(url,str_text,header){
+    let res = http.post(url, {
+                        "at": {
+                            "atMobiles":[
+                            ],
+                            "atUserIds":[
+                            ],
+                            "isAtAll": true
+                        },
+                        "text": {
+                            "content":str_text
+                        },
+                        "msgtype":"text"
+                    },header);
+    if(res.statusCode==200){
+        console.log('钉钉消息发送成功')
+        console.log(res.body.string())
+    }else{
+        console.log(res.statusCode)
+        console.log('钉钉消息发送失败')
+        console.log(res.body.string())
+    }
+}
 //创建配置表
 function createDefaultExcel(){
     let excelObj = excel.open(fileDownloadPath+'/'+'配置表'+ '_模板.xls', '数据源')
@@ -1778,17 +1802,19 @@ function main(){
     // 确保APP版本号，否之停止执行并提示，三个参数：name、version、msg
     resetDevice()
     var is_not_continue = true
-    var app_str = ''
     if(init()){
         var time = get_time();
-        var title = String(time) + '----本次（新）领导视窗巡检已完成，以下是巡检报告:' 
-        var host = configDict['邮件服务器']
-        var port = configDict['邮件端口']
-        var email = configDict['email']
-        var passw = configDict['邮件密码']
-        var fromPseron = configDict['发件人']
+        var title ='巡检结果：'+ String(time) 
+        var app_str = title+'\n'
+        // var host = configDict['邮件服务器']
+        // var port = configDict['邮件端口']
+        // var email = configDict['email']
+        // var passw = configDict['邮件密码']
+        // var fromPseron = configDict['发件人']
+        var url = configDict['钉钉接口']
         var path = fileDownloadPath+'/数据对比表_模板.xls'
         var sheetNames = configDict['sheet页名称'].split(',')
+        var header = {"contentType": "application/json"}
         if(String(readExcel(path,sheetNames)).indexOf('错误')!=-1){
             is_not_continue = false
             app_str+=readExcel(path,sheetNames)
@@ -1819,38 +1845,50 @@ function main(){
             }
         }
         if(is_not_continue){
-            var str_text =  user_development()+'\n'+
-                        '----------------------------------------------\n'+
-                        kilomega_5G()+'\n'+
-                        '----------------------------------------------\n'+
-                        digital_living()+'\n'+
-                        '----------------------------------------------\n'+
-                        reven_Progress()        +'\n'+
-                        '----------------------------------------------\n'+
-                        first_look()       +'\n'+
-                        '----------------------------------------------\n'+
-                        realtime_reading() +'\n'+
-                        '----------------------------------------------\n'+
-                        branch_realtime_reading()    +'\n'+
-                        '----------------------------------------------\n'+
-                        xz_service()  +'\n'+
-                        '----------------------------------------------\n'+
-                        network_analysis() +'\n'+
-                        '----------------------------------------------\n'+
+            //上面需要一巡检一个消息
+            var str_development = title + '\n' +user_development()
+            to_dingdingtalk(url,str_development,header)
+            var str_kilomega_5G = title +'\n' + kilomega_5G()
+            to_dingdingtalk(url,str_kilomega_5G,header)
+            var str_first_look = title +'\n' + first_look()
+            to_dingdingtalk(url,str_first_look,header)
+            var str_network_analysis = title +'\n'+ network_analysis()
+            to_dingdingtalk(url,str_network_analysis,header)
+            //巡检完成一起发送
+            var str_1 = title + '\n'+
+                        digital_living()+'\n'+ //少
+                        reven_Progress()        +'\n'+ //少
+                        realtime_reading() +'\n'+ //少
+                        branch_realtime_reading()    +'\n'+ //少
+                        xz_service()  +'\n'+  //少
                         qudao_integral()+'\n'+
-                        '----------------------------------------------\n'+
-                        exitApp()+'\n'+
-                        '-----------------------------------------------'
-            to_email(host,port,email,title,str_text,fromPseron,passw);            
-        }else{
-            to_email(host,port,email,title,app_str,fromPseron,passw);
+                        exitApp()
+            to_dingdingtalk(url,str_1,header)           
+        }else{            
+            to_dingdingtalk(url,app_str,header)
         }
          
     }
     automator.home();
 }
 main();
-// resetDevice()
+// var url = 'https://oapi.dingtalk.com/robot/send?access_token=d7e4f7cbf1c308065dca9d474be886065526119f3b605b4ad6b198db2a3bae83'
+// var data = {
+//             "at": {
+//                 "atMobiles":[
+//                 ],
+//                 "atUserIds":[
+//                 ],
+//                 "isAtAll": true
+//             },
+//             "text": {
+//                 "content":'巡检结果：\n'+
+//                 '----本次（新）领导视窗巡检已完成，以下是巡检报告:'
+//             },
+//             "msgtype":"text"
+//         }
+// var header = {"contentType": "application/json"}
+// to_dingdingtalk(url,data,header)
 // console.log('hello')
 // configDict = readConfig(configPath)
 // var path = fileDownloadPath+'/数据对比表_模板.xls'
