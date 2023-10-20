@@ -1856,12 +1856,12 @@ function main(){
             to_dingdingtalk(url,str_network_analysis,header)
             //巡检完成一起发送
             var str_1 = title + '\n'+
-                        digital_living()+'\n'+ //少
                         reven_Progress()        +'\n'+ //少
                         realtime_reading() +'\n'+ //少
                         branch_realtime_reading()    +'\n'+ //少
                         xz_service()  +'\n'+  //少
                         qudao_integral()+'\n'+
+                        digital_living()+'\n'+ //少
                         exitApp()
             to_dingdingtalk(url,str_1,header)           
         }else{            
